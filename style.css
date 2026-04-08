@@ -165,3 +165,32 @@ body.theme-funny-gold #langOutput {
     color: #ffd700;
     border-left-color: #ffcc00;
 }
+/* Mobile Optimization */
+@media (max-width: 768px) {
+    .app-shell {
+        flex-direction: column; /* Stacks Sidebar, Content, and Output */
+        height: auto;
+        overflow-y: visible;
+    }
+
+    .sidebar, .output-sidebar {
+        width: 100%; /* Take up full screen width */
+        border: none;
+        padding: 10px;
+        box-sizing: border-box;
+    }
+
+    .main-content {
+        padding: 10px;
+    }
+
+    /* Make grids 1-column on mobile */
+    .grid-2, .tool-options-grid {
+        grid-template-columns: 1fr;
+    }
+
+    /* Make the pre-code block take up more space so it's readable */
+    pre {
+        max-height: 400px;
+    }
+}
