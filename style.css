@@ -194,3 +194,32 @@ body.theme-funny-gold #langOutput {
         max-height: 400px;
     }
 }
+/* Mobile Responsiveness */
+@media (max-width: 1024px) {
+    .app-shell {
+        flex-direction: column; /* Stack vertically instead of side-by-side */
+        height: auto;
+        overflow-y: auto;
+    }
+
+    .sidebar, .output-sidebar, .main-content {
+        width: 100% !important; /* Force full width */
+        max-width: 100%;
+        border: none;
+        height: auto;
+        padding: 15px;
+    }
+
+    .output-sidebar {
+        border-top: 2px solid var(--accent);
+        position: sticky; /* Keeps the code output at the bottom if you want */
+        bottom: 0;
+        background: var(--bg);
+        z-index: 100;
+    }
+
+    /* Fix grids so they don't squish */
+    .grid-2, .tool-options-grid {
+        grid-template-columns: 1fr; /* One item per row on phones */
+    }
+}
