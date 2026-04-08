@@ -170,3 +170,17 @@ document.getElementById('addSymbol').onclick = () => {
 
 // Initialize
 updateCode();
+
+document.getElementById('themePicker').onchange = (e) => {
+    const theme = e.target.value;
+
+    // Remove all existing theme classes
+    document.body.classList.forEach(cls => {
+        if (cls.startsWith('theme-')) document.body.classList.remove(cls);
+    });
+
+    // Add the selected one
+    if (theme !== 'default') {
+        document.body.classList.add(`theme-${theme}`);
+    }
+};

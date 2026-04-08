@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Phoenix Material Architect - Master Edition</title>
+    <link rel="icon" type="image/png" href="logo.jpg">
     <link rel="stylesheet" href="style.css">
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono&display=swap" rel="stylesheet">
 </head>
@@ -33,22 +34,31 @@
         <section class="card">
             <h3>Forms</h3>
             <div class="tool-options-grid">
-                <label class="enable-row mini">
-                    <input type="checkbox" id="ingotCheck" checked> <span>Ingot</span>
-                </label>
-                <label class="enable-row mini">
-                    <input type="checkbox" id="dustCheck"> <span>Dust</span>
-                </label>
-                <label class="enable-row mini">
-                    <input type="checkbox" id="gemCheck"> <span>Gem</span>
-                </label>
-                <label class="enable-row mini">
-                    <input type="checkbox" id="fluidCheck"> <span>Fluid</span>
-                </label>
-                <label class="enable-row mini">
-                    <input type="checkbox" id="plasmaCheck"> <span>Plasma</span>
-                </label>
+                <label class="enable-row mini"><input type="checkbox" id="ingotCheck" checked> <span>Ingot</span></label>
+                <label class="enable-row mini"><input type="checkbox" id="dustCheck"> <span>Dust</span></label>
+                <label class="enable-row mini"><input type="checkbox" id="gemCheck"> <span>Gem</span></label>
+                <label class="enable-row mini"><input type="checkbox" id="fluidCheck"> <span>Fluid</span></label>
+                <label class="enable-row mini"><input type="checkbox" id="plasmaCheck"> <span>Plasma</span></label>
             </div>
+        </section>
+
+        <section class="card">
+            <h3>Interface Theme</h3>
+            <select id="themePicker">
+                <option value="default">Default Blue</option>
+                <option value="purple">Void Purple</option>
+                <option value="red">Blood Red</option>
+                <option value="orange">Industrial Orange</option>
+                <option value="funny-gold">✨ Funny Gold ✨</option>
+            </select>
+        </section>
+
+        <section class="card">
+            <h3>Output Settings</h3>
+            <label class="enable-row">
+                <input type="checkbox" id="kubeJSMode">
+                <span>Enable KubeJS Mode</span>
+            </label>
         </section>
     </aside>
 
@@ -63,22 +73,22 @@
                     <input type="text" id="toolDurability" placeholder="Durability (2048)">
                     <input type="text" id="toolLevel" placeholder="Harvest Level (4)">
                 </div>
-                <div class="checkbox-row">
-                    <label class="enable-row mini">
-                        <input type="checkbox" id="toolUnbreakable">
-                        <span>Unbreakable</span>
-                    </label>
-                    <label class="enable-row mini">
-                        <input type="checkbox" id="toolMagnetic">
-                        <span>Magnetic</span>
-                    </label>
+                <div class="tool-options-grid">
+                    <label class="enable-row mini"><input type="checkbox" id="toolUnbreakable"><span>Unbreakable</span></label>
+                    <label class="enable-row mini"><input type="checkbox" id="toolMagnetic"><span>Magnetic</span></label>
                 </div>
                 <label class="small-label">Tool Types (Ctrl+Click)</label>
-                <select id="toolTypeList" multiple size="6">
-                    <option>SWORD</option><option>PICKAXE</option><option>SHOVEL</option><option>AXE</option>
-                    <option>HOE</option><option>WRENCH</option><option>MINING_HAMMER</option><option>SAW</option>
-                    <option>WIRE_CUTTER</option><option>SCYTHE</option><option>KNIFE</option><option>DRILL_HV</option>
-                    <option>BUZZSAW</option><option>SCREWDRIVER</option>
+                <select id="toolTypeList" multiple size="10">
+                    <option>SWORD</option><option>PICKAXE</option><option>SHOVEL</option><option>AXE</option><option>HOE</option>
+                    <option>WRENCH</option><option>MINING_HAMMER</option><option>SPADE</option><option>SAW</option><option>MORTAR</option>
+                    <option>WIRE_CUTTER</option><option>SCYTHE</option><option>KNIFE</option><option>BUTCHERY_KNIFE</option>
+                    <option>FILE</option><option>SCREWDRIVER</option><option>CROWBAR</option><option>PLUNGER</option>
+                    <option>HARD_HAMMER</option><option>SOFT_MALLET</option>
+                    <option>DRILL_LV</option><option>DRILL_MV</option><option>DRILL_HV</option><option>DRILL_EV</option><option>DRILL_IV</option>
+                    <option>CHAINSAW_LV</option><option>BUZZSAW</option>
+                    <option>WRENCH_LV</option><option>WRENCH_HV</option><option>WRENCH_IV</option>
+                    <option>SCREWDRIVER_LV</option>
+                    <option>WIRE_CUTTER_LV</option><option>WIRE_CUTTER_HV</option><option>WIRE_CUTTER_IV</option>
                 </select>
             </section>
 
@@ -117,9 +127,7 @@
                     <input type="text" id="voltage" placeholder="Voltage (HV)">
                     <input type="text" id="amperage" placeholder="Amperage (5)">
                     <input type="text" id="lossPerBlock" placeholder="Loss/Block (3)">
-                    <label class="enable-row mini">
-                        <input type="checkbox" id="isSuperconductor"> <span>Superconductor</span>
-                    </label>
+                    <label class="enable-row mini"><input type="checkbox" id="isSuperconductor"> <span>Superconductor</span></label>
                 </div>
             </section>
 
@@ -146,25 +154,28 @@
             <section class="card full-width">
                 <h3>Material Flags</h3>
                 <label class="small-label">Select Flags (Ctrl+Click for multiple selection)</label>
-                <select id="flagList" multiple size="8">
-                    <option>GENERATE_PLATE</option>
-                    <option>GENERATE_ROD</option>
-                    <option>GENERATE_GEAR</option>
-                    <option>GENERATE_BOLT_SCREW</option>
-                    <option>GENERATE_FRAME</option>
-                    <option>GENERATE_FOIL</option>
-                    <option>IS_MAGNETIC</option>
-                    <option>MORTAR_GRINDABLE</option>
-                    <option>DECOMPOSITION_BY_ELECTROLYZING</option>
+                <select id="flagList" multiple size="12">
+                    <option>GENERATE_PLATE</option><option>GENERATE_DENSE</option><option>GENERATE_BOLT_SCREW</option>
+                    <option>GENERATE_ROD</option><option>GENERATE_LONG_ROD</option><option>GENERATE_GEAR</option>
+                    <option>GENERATE_SMALL_GEAR</option><option>GENERATE_FRAME</option><option>GENERATE_RING</option>
+                    <option>GENERATE_FOIL</option><option>GENERATE_SPRING</option><option>GENERATE_SPRING_SMALL</option>
+                    <option>GENERATE_FINE_WIRE</option><option>GENERATE_ROUND</option><option>GENERATE_ROTOR</option>
+                    <option>GENERATE_LENS</option><option>FORCE_GENERATE_BLOCK</option><option>EXCLUDE_BLOCK_CRAFTING_RECIPES</option>
+                    <option>EXCLUDE_PLATE_COMPRESSOR_RECIPE</option><option>EXCLUDE_BLOCK_CRAFTING_BY_HAND_RECIPES</option>
+                    <option>IS_MAGNETIC</option><option>PHOSPHORESCENT</option><option>EXPLOSIVE</option><option>FLAMMABLE</option>
+                    <option>STICKY</option><option>FIRE_RESISTANT</option><option>CRYSTALLIZABLE</option><option>MORTAR_GRINDABLE</option>
+                    <option>DECOMPOSITION_BY_CENTRIFUGING</option><option>DECOMPOSITION_BY_ELECTROLYZING</option>
+                    <option>DISABLE_DECOMPOSITION</option><option>HIGH_SIFTER_OUTPUT</option><option>NO_WORKING</option>
+                    <option>NO_SMASHING</option><option>NO_SMELTING</option><option>NO_ORE_SMELTING</option>
+                    <option>NO_ORE_PROCESSING_TAB</option><option>NO_UNIFICATION</option><option>BLAST_FURNACE_CALCITE_DOUBLE</option>
+                    <option>BLAST_FURNACE_CALCITE_TRIPLE</option><option>DISABLE_ALLOY_BLAST</option><option>DISABLE_ALLOY_PROPERTY</option>
                 </select>
             </section>
         </div>
     </main>
 
     <aside class="output-sidebar">
-        <div class="output-header">
-            <label><input type="checkbox" id="kubeJSMode"> KubeJS Mode</label>
-        </div>
+        <h3 style="color: var(--accent); margin-bottom: 10px;">Generated Architect Code</h3>
         <pre><code id="materialOutput"></code></pre>
         <textarea id="langOutput" readonly placeholder="Language Provider output..."></textarea>
         <button id="quickAqua" class="secondary-btn">Prepend §b (Aqua)</button>
