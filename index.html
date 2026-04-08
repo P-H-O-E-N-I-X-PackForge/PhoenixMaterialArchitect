@@ -2,37 +2,173 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Phoenix Material Architect - Web Edition</title>
+    <title>Phoenix Material Architect - Master Edition</title>
     <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono&display=swap" rel="stylesheet">
 </head>
 <body>
-<div class="container">
-    <h1>Phoenix Material Architect</h1>
+<div class="app-shell">
+    <aside class="sidebar">
+        <section class="card">
+            <h3>Base Configuration</h3>
+            <input type="text" id="idField" placeholder="Material ID (e.g. nebular_gold)" value="nebular_gold">
+            <div class="input-with-btn">
+                <input type="text" id="nameField" placeholder="Display Name" value="Nebular Gold">
+                <button id="addSymbol" title="Add § and copy to clipboard">§</button>
+            </div>
+            <div class="grid-2">
+                <input type="text" id="colorField" placeholder="Primary Hex (FFE100)" value="FFE100">
+                <input type="text" id="secColorField" placeholder="Secondary Hex (FFFFFF)" value="FFFFFF">
+            </div>
+            <select id="iconSetBox">
+                <option>METALLIC</option><option>SHINY</option><option>DULL</option><option>MAGNETIC</option>
+                <option>BRIGHT</option><option>DIAMOND</option><option>EMERALD</option><option>RUBY</option>
+                <option>OPAL</option><option>GLASS</option><option>NETHERSTAR</option><option>FINE</option>
+                <option>SAND</option><option>WOOD</option><option>ROUGH</option><option>FLINT</option>
+                <option>LIGNITE</option><option>QUARTZ</option><option>CERTUS</option><option>LAPIS</option>
+                <option>FLUID</option><option>GEM_HORIZONTAL</option><option>GEM_VERTICAL</option>
+            </select>
+        </section>
 
-    <div class="main-layout">
-        <section class="config-panel">
-            <label>Material ID:</label>
-            <input type="text" id="idField" value="nebular_gold">
-
-            <label>Display Name:</label>
-            <input type="text" id="nameField" value="Nebular Gold">
-
-            <label>Primary Color (Hex):</label>
-            <input type="text" id="colorField" value="FFE100">
-
-            <div class="checkbox-group">
-                <label><input type="checkbox" id="ingotCheck" checked> Ingot</label>
-                <label><input type="checkbox" id="dustCheck"> Dust</label>
-                <label><input type="checkbox" id="fluidCheck"> Fluid</label>
+        <section class="card">
+            <h3>Forms</h3>
+            <div class="tool-options-grid">
+                <label class="enable-row mini">
+                    <input type="checkbox" id="ingotCheck" checked> <span>Ingot</span>
+                </label>
+                <label class="enable-row mini">
+                    <input type="checkbox" id="dustCheck"> <span>Dust</span>
+                </label>
+                <label class="enable-row mini">
+                    <input type="checkbox" id="gemCheck"> <span>Gem</span>
+                </label>
+                <label class="enable-row mini">
+                    <input type="checkbox" id="fluidCheck"> <span>Fluid</span>
+                </label>
+                <label class="enable-row mini">
+                    <input type="checkbox" id="plasmaCheck"> <span>Plasma</span>
+                </label>
             </div>
         </section>
+    </aside>
 
-        <section class="output-panel">
-            <label><input type="checkbox" id="kubeJSMode"> KubeJS Output Mode</label>
-            <textarea id="materialOutput" readonly rows="15"></textarea>
-            <textarea id="langOutput" readonly rows="2"></textarea>
-        </section>
-    </div>
+    <main class="main-content">
+        <div class="property-grid">
+            <section class="card">
+                <h3>Tools</h3>
+                <label class="enable-row"><input type="checkbox" id="enableTools"> <span>Enable Tool Properties</span></label>
+                <div class="grid-2">
+                    <input type="text" id="toolSpeed" placeholder="Harvest Speed (12.0)">
+                    <input type="text" id="toolDamage" placeholder="Attack Damage (8.0)">
+                    <input type="text" id="toolDurability" placeholder="Durability (2048)">
+                    <input type="text" id="toolLevel" placeholder="Harvest Level (4)">
+                </div>
+                <div class="checkbox-row">
+                    <label class="enable-row mini">
+                        <input type="checkbox" id="toolUnbreakable">
+                        <span>Unbreakable</span>
+                    </label>
+                    <label class="enable-row mini">
+                        <input type="checkbox" id="toolMagnetic">
+                        <span>Magnetic</span>
+                    </label>
+                </div>
+                <label class="small-label">Tool Types (Ctrl+Click)</label>
+                <select id="toolTypeList" multiple size="6">
+                    <option>SWORD</option><option>PICKAXE</option><option>SHOVEL</option><option>AXE</option>
+                    <option>HOE</option><option>WRENCH</option><option>MINING_HAMMER</option><option>SAW</option>
+                    <option>WIRE_CUTTER</option><option>SCYTHE</option><option>KNIFE</option><option>DRILL_HV</option>
+                    <option>BUZZSAW</option><option>SCREWDRIVER</option>
+                </select>
+            </section>
+
+            <section class="card">
+                <h3>Blast Furnace</h3>
+                <div class="grid-2">
+                    <input type="number" id="bTempField" placeholder="Temp (K)">
+                    <select id="gasBox">
+                        <option value="null">No Gas</option>
+                        <option>LOW</option><option>MID</option><option>HIGH</option><option>HIGHER</option><option>HIGHEST</option>
+                    </select>
+                    <input type="text" id="bEutField" placeholder="EUt (VA[EV])">
+                    <input type="text" id="bDurationField" placeholder="Duration (Ticks)">
+                </div>
+            </section>
+
+            <section class="card">
+                <h3>Fluid Pipes</h3>
+                <label class="enable-row"><input type="checkbox" id="enableFluidPipe"> <span>Enable Fluid Pipe</span></label>
+                <div class="grid-2">
+                    <input type="text" id="fPipeTemp" placeholder="Max Temp (K)">
+                    <input type="text" id="fPipeThroughput" placeholder="Throughput">
+                </div>
+                <div class="tool-options-grid">
+                    <label class="enable-row mini"><input type="checkbox" id="fGas"> <span>Gas</span></label>
+                    <label class="enable-row mini"><input type="checkbox" id="fAcid"> <span>Acid</span></label>
+                    <label class="enable-row mini"><input type="checkbox" id="fCryo"> <span>Cryo</span></label>
+                    <label class="enable-row mini"><input type="checkbox" id="fPlasma"> <span>Plasma</span></label>
+                </div>
+            </section>
+
+            <section class="card">
+                <h3>Cables</h3>
+                <label class="enable-row"><input type="checkbox" id="enableCable"> <span>Enable Cable</span></label>
+                <div class="grid-2">
+                    <input type="text" id="voltage" placeholder="Voltage (HV)">
+                    <input type="text" id="amperage" placeholder="Amperage (5)">
+                    <input type="text" id="lossPerBlock" placeholder="Loss/Block (3)">
+                    <label class="enable-row mini">
+                        <input type="checkbox" id="isSuperconductor"> <span>Superconductor</span>
+                    </label>
+                </div>
+            </section>
+
+            <section class="card">
+                <h3>Item Pipes</h3>
+                <label class="enable-row"><input type="checkbox" id="enableItemPipe"> <span>Enable Item Pipe</span></label>
+                <div class="grid-2">
+                    <input type="text" id="itemPriority" placeholder="Priority (1)">
+                    <input type="text" id="itemStacks" placeholder="Stacks/Sec (1)">
+                </div>
+            </section>
+
+            <section class="card">
+                <h3>Rotors</h3>
+                <label class="enable-row"><input type="checkbox" id="enableRotor"> <span>Enable Rotor</span></label>
+                <div class="grid-2">
+                    <input type="text" id="rotorPower" placeholder="Power (130)">
+                    <input type="text" id="rotorEff" placeholder="Efficiency % (115)">
+                    <input type="text" id="rotorDamage" placeholder="Damage (3.0)">
+                    <input type="text" id="rotorDurability" placeholder="Durability (1600)">
+                </div>
+            </section>
+
+            <section class="card full-width">
+                <h3>Material Flags</h3>
+                <label class="small-label">Select Flags (Ctrl+Click for multiple selection)</label>
+                <select id="flagList" multiple size="8">
+                    <option>GENERATE_PLATE</option>
+                    <option>GENERATE_ROD</option>
+                    <option>GENERATE_GEAR</option>
+                    <option>GENERATE_BOLT_SCREW</option>
+                    <option>GENERATE_FRAME</option>
+                    <option>GENERATE_FOIL</option>
+                    <option>IS_MAGNETIC</option>
+                    <option>MORTAR_GRINDABLE</option>
+                    <option>DECOMPOSITION_BY_ELECTROLYZING</option>
+                </select>
+            </section>
+        </div>
+    </main>
+
+    <aside class="output-sidebar">
+        <div class="output-header">
+            <label><input type="checkbox" id="kubeJSMode"> KubeJS Mode</label>
+        </div>
+        <pre><code id="materialOutput"></code></pre>
+        <textarea id="langOutput" readonly placeholder="Language Provider output..."></textarea>
+        <button id="quickAqua" class="secondary-btn">Prepend §b (Aqua)</button>
+    </aside>
 </div>
 <script src="app.js"></script>
 </body>
