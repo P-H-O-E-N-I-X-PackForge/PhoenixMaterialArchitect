@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Phoenix Material Architect - Web Edition</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="container">
+    <h1>Phoenix Material Architect</h1>
+
+    <div class="main-layout">
+        <section class="config-panel">
+            <label>Material ID:</label>
+            <input type="text" id="idField" value="nebular_gold">
+
+            <label>Display Name:</label>
+            <input type="text" id="nameField" value="Nebular Gold">
+
+            <label>Primary Color (Hex):</label>
+            <input type="text" id="colorField" value="FFE100">
+
+            <div class="checkbox-group">
+                <label><input type="checkbox" id="ingotCheck" checked> Ingot</label>
+                <label><input type="checkbox" id="dustCheck"> Dust</label>
+                <label><input type="checkbox" id="fluidCheck"> Fluid</label>
+            </div>
+        </section>
+
+        <section class="output-panel">
+            <label><input type="checkbox" id="kubeJSMode"> KubeJS Output Mode</label>
+            <textarea id="materialOutput" readonly rows="15"></textarea>
+            <textarea id="langOutput" readonly rows="2"></textarea>
+        </section>
+    </div>
+</div>
+<script src="app.js"></script>
+</body>
+</html>
