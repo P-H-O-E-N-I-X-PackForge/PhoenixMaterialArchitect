@@ -12,116 +12,100 @@ body {
     background: var(--bg);
     color: #ccc;
     font-family: var(--font);
-    font-size: 11px;
+    font-size: 11px; /* Dropped from 12px for global compact feel */
     transition: background-color 0.2s, color 0.2s;
-    overflow: hidden; /* Prevent body-level double scrolling */
 }
 
 .app-shell { display: flex; height: 100vh; overflow: hidden; }
 
-/* --- SIDEBAR: ULTRA COMPACT & SCROLL-HIDDEN --- */
+/* --- SIDEBAR COMPACTION --- */
 .sidebar {
-    width: 260px; /* Reduced further */
-    padding: 10px;
+    width: 270px; /* Narrower width */
+    padding: 12px; /* Reduced from 20px */
     background: #181818;
     border-right: 1px solid var(--border);
     overflow-y: auto;
-    scrollbar-width: none; /* Firefox: Hide scrollbar */
-    -ms-overflow-style: none; /* IE/Edge: Hide scrollbar */
 }
 
-.sidebar::-webkit-scrollbar {
-    display: none; /* Chrome/Safari: Hide scrollbar */
-}
-
+/* Tighten cards specifically in the sidebar */
 .sidebar .card {
-    padding: 8px; /* Tightest padding */
-    margin-bottom: 8px;
-    border-radius: 6px;
+    padding: 10px;
+    margin-bottom: 8px; /* Less gap between sections */
 }
 
-/* Phoenix Branding */
-.sidebar div[style*="text-align: center"] { margin-bottom: 8px !important; }
+/* Shrink Phoenix Branding area */
+.sidebar div[style*="text-align: center"] {
+    margin-bottom: 12px !important;
+}
 .sidebar div[style*="text-align: center"] img {
-    width: 50px !important;
-    height: 50px !important;
+    width: 60px !important; /* Smaller logo */
+    height: 60px !important;
 }
+.sidebar h2 { font-size: 11px !important; margin-top: 5px !important; }
 
+/* Shrink header spacing */
 h3 {
-    margin: 0 0 6px 0;
+    margin: 0 0 8px 0;
     color: var(--accent);
-    font-size: 9px;
+    font-size: 10px;
     text-transform: uppercase;
     border-bottom: 1px solid var(--border);
-    padding-bottom: 3px;
+    padding-bottom: 4px;
+    letter-spacing: 1px;
 }
 
-/* Input Compaction */
+/* Tighten inputs and buttons */
 input, select, textarea {
     background: var(--input); color: #fff; border: 1px solid var(--border);
-    border-radius: 4px; padding: 5px 8px; font-family: var(--font); width: 100%; margin-bottom: 4px; box-sizing: border-box;
+    border-radius: 4px; padding: 6px; font-family: var(--font); width: 100%; margin-bottom: 4px; box-sizing: border-box;
     font-size: 11px;
 }
 ::placeholder { color: #555; font-size: 9px; }
 
-/* Mode Switcher */
+/* Compact Mode Switcher Buttons */
 #btnShowArch, #btnShowLab {
-    padding: 5px !important;
-    font-size: 9px !important;
-    border-radius: 4px;
+    padding: 6px !important;
+    font-size: 10px !important;
 }
 
-/* Rows & Grids */
-.enable-row { padding: 6px 8px; margin-bottom: 4px; font-size: 10px; }
-.enable-row.mini { padding: 3px 6px; }
-.grid-2 { gap: 6px; }
-
-/* --- MAIN CONTENT & OUTPUT --- */
-.main-content {
-    flex: 1;
-    overflow-y: auto;
-    padding: 20px;
-    background-image: radial-gradient(circle, #1a1a1a 1px, transparent 1px);
-    background-size: 30px 30px;
+/* Compact Checkbox Rows */
+.enable-row {
+    padding: 8px; margin-bottom: 6px; font-size: 11px;
 }
-
-.output-sidebar {
-    width: 420px;
-    padding: 15px;
-    background: #181818;
-    border-left: 1px solid var(--border);
-    display: flex;
-    flex-direction: column;
-    scrollbar-width: thin; /* Keep thin for code area if needed */
+.enable-row.mini {
+    padding: 4px 8px;
 }
+.enable-row.mini span { font-size: 10px; }
 
-/* Custom Scrollbar for Output (Invisible until hover) */
-.output-sidebar::-webkit-scrollbar,
-.main-content::-webkit-scrollbar { width: 4px; }
-.output-sidebar::-webkit-scrollbar-thumb,
-.main-content::-webkit-scrollbar-thumb { background: transparent; border-radius: 10px; }
-.output-sidebar:hover::-webkit-scrollbar-thumb,
-.main-content:hover::-webkit-scrollbar-thumb { background: var(--accent); }
+/* Main Content & Output stays standard for readability */
+.output-sidebar { width: 450px; padding: 20px; background: #181818; border-left: 1px solid var(--border); display: flex; flex-direction: column; }
+.main-content { flex: 1; overflow-y: auto; padding: 20px; background-image: radial-gradient(circle, #1a1a1a 1px, transparent 1px); background-size: 30px 30px; }
 
-.property-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-.card { background: var(--card); border-radius: 8px; padding: 12px; border: 1px solid var(--border); margin-bottom: 12px; }
+.property-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+.card { background: var(--card); border-radius: 10px; padding: 15px; border: 1px solid var(--border); margin-bottom: 15px; }
+.full-width { grid-column: span 2; }
 
-/* Texture Lab Layers */
+/* Texture Lab Specifics */
 .layer-card {
-    background: #252526; border-radius: 5px; padding: 6px; margin-bottom: 6px; border-left: 2px solid var(--accent);
+    background: #252526; border-radius: 6px; padding: 8px; margin-bottom: 8px; border-left: 3px solid var(--accent);
 }
 
-/* Canvas Styling */
 canvas {
-    image-rendering: pixelated;
-    box-shadow: 0 0 40px rgba(0,0,0,0.8);
-    border: 1px solid #444;
+    image-rendering: pixelated; image-rendering: crisp-edges;
+    box-shadow: 0 0 50px rgba(0,0,0,0.7); border: 1px solid #444; background: #000;
 }
 
 /* Output Styling */
-pre { background: #000; border-radius: 6px; padding: 12px; border: 1px solid var(--accent); flex: 1; overflow: auto; margin-bottom: 8px; font-size: 10px; }
-code { color: #9cdcfe; line-height: 1.4; }
-textarea#langOutput { height: 45px; resize: none; color: #ce9178; border-left: 3px solid var(--accent); font-size: 10px; }
+pre { background: #000; border-radius: 8px; padding: 15px; border: 1px solid var(--accent); flex: 1; overflow: auto; margin-bottom: 10px; }
+code { color: #9cdcfe; white-space: pre; line-height: 1.5; font-size: 11px; }
+textarea#langOutput { height: 50px; resize: none; color: #ce9178; border-left: 4px solid var(--accent); font-size: 11px; }
+
+/* Buttons */
+.secondary-btn {
+    background: var(--input); color: #fff; border: 1px solid var(--border);
+    padding: 8px; border-radius: 6px; cursor: pointer; font-family: var(--font); font-size: 11px;
+}
+.secondary-btn:hover { background: #444; border-color: var(--accent); color: var(--accent); }
 
 /* Themes */
 body.theme-purple { --accent: #a277ff; }
@@ -129,7 +113,14 @@ body.theme-red    { --accent: #ff5555; }
 body.theme-orange { --accent: #ffb86c; }
 body.theme-funny-gold { --accent: #ffcc00; --bg: #1a0f2e; --card: #2d1b4d; --border: #ffcc00; }
 
-@media (max-width: 1100px) {
+/* Subtle Scrollbars */
+::-webkit-scrollbar { width: 4px; height: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #333; border-radius: 10px; }
+::-webkit-scrollbar-thumb:hover { background: var(--accent); }
+
+@media (max-width: 1200px) {
     .app-shell { flex-direction: column; overflow-y: auto; height: auto; }
-    .sidebar, .output-sidebar { width: 100%; border: none; }
+    .sidebar, .output-sidebar { width: 100%; height: auto; border: none; }
+    .property-grid { grid-template-columns: 1fr; }
 }
