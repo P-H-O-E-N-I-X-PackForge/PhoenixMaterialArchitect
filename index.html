@@ -2,25 +2,35 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Phoenix Material Architect - Master Edition</title>
+    <title>Phoenix Material Suite - Master Edition</title>
     <link rel="icon" type="image/png" href="logo.jpg">
     <link rel="stylesheet" href="style.css">
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <body>
 <div class="app-shell">
     <aside class="sidebar">
+        <div style="text-align: center; margin-bottom: 20px;">
+            <img src="logo.jpg" alt="Phoenix Logo" style="width: 80px; height: 80px; border-radius: 12px; border: 1px solid var(--border); object-fit: cover;">
+            <h2 style="margin-top: 10px; color: var(--accent); font-size: 14px; letter-spacing: 1px;">PHOENIX SUITE</h2>
+        </div>
+
+        <div class="card" style="display: flex; gap: 5px; margin-bottom: 20px; padding: 5px;">
+            <button id="btnShowArch" class="secondary-btn" style="flex: 1; background: var(--accent); color: white;">ARCHITECT</button>
+            <button id="btnShowLab" class="secondary-btn" style="flex: 1;">TEXTURE LAB</button>
+        </div>
+
         <section class="card">
             <h3>Base Configuration</h3>
-            <input type="text" id="idField" placeholder="Material ID (e.g. nebular_gold)" value="nebular_gold">
+            <input type="text" id="idField" placeholder="Material ID" value="nebular_gold">
             <div class="input-with-btn">
                 <input type="text" id="nameField" placeholder="Display Name" value="Nebular Gold">
                 <button id="addSymbol" title="Add § and copy to clipboard">§</button>
             </div>
             <div class="grid-2">
-                <input type="text" id="colorField" placeholder="Primary Hex (FFE100)" value="FFE100">
-                <input type="text" id="secColorField" placeholder="Secondary Hex (FFFFFF)" value="FFFFFF">
+                <input type="text" id="colorField" placeholder="Primary Hex" value="FFE100">
+                <input type="text" id="secColorField" placeholder="Secondary Hex" value="FFFFFF">
             </div>
             <select id="iconSetBox">
                 <option>METALLIC</option><option>SHINY</option><option>DULL</option><option>MAGNETIC</option>
@@ -32,146 +42,162 @@
             </select>
         </section>
 
-        <section class="card">
-            <h3>Forms</h3>
-            <div class="tool-options-grid">
-                <label class="enable-row mini"><input type="checkbox" id="ingotCheck" checked> <span>Ingot</span></label>
-                <label class="enable-row mini"><input type="checkbox" id="dustCheck"> <span>Dust</span></label>
-                <label class="enable-row mini"><input type="checkbox" id="gemCheck"> <span>Gem</span></label>
-                <label class="enable-row mini"><input type="checkbox" id="fluidCheck"> <span>Fluid</span></label>
-                <label class="enable-row mini"><input type="checkbox" id="plasmaCheck"> <span>Plasma</span></label>
-            </div>
-        </section>
+        <div id="archSidebar">
+            <section class="card">
+                <h3>Forms</h3>
+                <div class="tool-options-grid">
+                    <label class="enable-row mini"><input type="checkbox" id="ingotCheck" checked> <span>Ingot</span></label>
+                    <label class="enable-row mini"><input type="checkbox" id="dustCheck"> <span>Dust</span></label>
+                    <label class="enable-row mini"><input type="checkbox" id="gemCheck"> <span>Gem</span></label>
+                    <label class="enable-row mini"><input type="checkbox" id="fluidCheck"> <span>Fluid</span></label>
+                    <label class="enable-row mini"><input type="checkbox" id="plasmaCheck"> <span>Plasma</span></label>
+                </div>
+            </section>
+            <section class="card">
+                <h3>Interface Theme</h3>
+                <select id="themePicker">
+                    <option value="default">Default Blue</option>
+                    <option value="purple">Void Purple</option>
+                    <option value="red">Blood Red</option>
+                    <option value="orange">Industrial Orange</option>
+                    <option value="funny-gold">✨ Funny Gold ✨</option>
+                </select>
+            </section>
+            <section class="card">
+                <h3>Output Settings</h3>
+                <label class="enable-row"><input type="checkbox" id="kubeJSMode"><span>Enable KubeJS Mode</span></label>
+            </section>
+        </div>
 
-        <section class="card">
-            <h3>Interface Theme</h3>
-            <select id="themePicker">
-                <option value="default">Default Blue</option>
-                <option value="purple">Void Purple</option>
-                <option value="red">Blood Red</option>
-                <option value="orange">Industrial Orange</option>
-                <option value="funny-gold">✨ Funny Gold ✨</option>
-            </select>
-        </section>
-
-        <section class="card">
-            <h3>Output Settings</h3>
-            <label class="enable-row">
-                <input type="checkbox" id="kubeJSMode">
-                <span>Enable KubeJS Mode</span>
-            </label>
-        </section>
+        <div id="labSidebar" style="display: none;">
+            <section class="card">
+                <h3>Texture Layers</h3>
+                <div id="layerList"></div>
+                <button class="secondary-btn" style="width: 100%; margin-top: 10px;" onclick="addLayer()">+ Add Layer</button>
+            </section>
+        </div>
     </aside>
 
     <main class="main-content">
-        <div class="property-grid">
-            <section class="card">
-                <h3>Tools</h3>
-                <label class="enable-row"><input type="checkbox" id="enableTools"> <span>Enable Tool Properties</span></label>
-                <div class="grid-2">
-                    <input type="text" id="toolSpeed" placeholder="Harvest Speed (12.0)">
-                    <input type="text" id="toolDamage" placeholder="Attack Damage (8.0)">
-                    <input type="text" id="toolDurability" placeholder="Durability (2048)">
-                    <input type="text" id="toolLevel" placeholder="Harvest Level (4)">
-                </div>
-                <div class="tool-options-grid">
-                    <label class="enable-row mini"><input type="checkbox" id="toolUnbreakable"><span>Unbreakable</span></label>
-                    <label class="enable-row mini"><input type="checkbox" id="toolMagnetic"><span>Magnetic</span></label>
-                </div>
-                <label class="small-label">Tool Types (Ctrl+Click)</label>
-                <select id="toolTypeList" multiple size="10">
-                    <option>SWORD</option><option>PICKAXE</option><option>SHOVEL</option><option>AXE</option><option>HOE</option>
-                    <option>WRENCH</option><option>MINING_HAMMER</option><option>SPADE</option><option>SAW</option><option>MORTAR</option>
-                    <option>WIRE_CUTTER</option><option>SCYTHE</option><option>KNIFE</option><option>BUTCHERY_KNIFE</option>
-                    <option>FILE</option><option>SCREWDRIVER</option><option>CROWBAR</option><option>PLUNGER</option>
-                    <option>HARD_HAMMER</option><option>SOFT_MALLET</option>
-                    <option>DRILL_LV</option><option>DRILL_MV</option><option>DRILL_HV</option><option>DRILL_EV</option><option>DRILL_IV</option>
-                    <option>CHAINSAW_LV</option><option>BUZZSAW</option>
-                    <option>WRENCH_LV</option><option>WRENCH_HV</option><option>WRENCH_IV</option>
-                    <option>SCREWDRIVER_LV</option>
-                    <option>WIRE_CUTTER_LV</option><option>WIRE_CUTTER_HV</option><option>WIRE_CUTTER_IV</option>
-                </select>
-            </section>
-
-            <section class="card">
-                <h3>Blast Furnace</h3>
-                <div class="grid-2">
-                    <input type="number" id="bTempField" placeholder="Temp (K)">
-                    <select id="gasBox">
-                        <option value="null">No Gas</option>
-                        <option>LOW</option><option>MID</option><option>HIGH</option><option>HIGHER</option><option>HIGHEST</option>
+        <div id="archMainView">
+            <div class="property-grid">
+                <section class="card">
+                    <h3>Tools</h3>
+                    <label class="enable-row"><input type="checkbox" id="enableTools"> <span>Enable Tool Properties</span></label>
+                    <div class="grid-2">
+                        <input type="text" id="toolSpeed" placeholder="Harvest Speed (12.0)">
+                        <input type="text" id="toolDamage" placeholder="Attack Damage (8.0)">
+                        <input type="text" id="toolDurability" placeholder="Durability (2048)">
+                        <input type="text" id="toolLevel" placeholder="Harvest Level (4)">
+                    </div>
+                    <div class="tool-options-grid">
+                        <label class="enable-row mini"><input type="checkbox" id="toolUnbreakable"><span>Unbreakable</span></label>
+                        <label class="enable-row mini"><input type="checkbox" id="toolMagnetic"><span>Magnetic</span></label>
+                    </div>
+                    <label class="small-label">Tool Types (Ctrl+Click)</label>
+                    <select id="toolTypeList" multiple size="10">
+                        <option>SWORD</option><option>PICKAXE</option><option>SHOVEL</option><option>AXE</option><option>HOE</option>
+                        <option>WRENCH</option><option>MINING_HAMMER</option><option>SPADE</option><option>SAW</option><option>MORTAR</option>
+                        <option>WIRE_CUTTER</option><option>SCYTHE</option><option>KNIFE</option><option>BUTCHERY_KNIFE</option>
+                        <option>FILE</option><option>SCREWDRIVER</option><option>CROWBAR</option><option>PLUNGER</option>
+                        <option>HARD_HAMMER</option><option>SOFT_MALLET</option>
+                        <option>DRILL_LV</option><option>DRILL_MV</option><option>DRILL_HV</option><option>DRILL_EV</option><option>DRILL_IV</option>
+                        <option>CHAINSAW_LV</option><option>BUZZSAW</option>
+                        <option>WRENCH_LV</option><option>WRENCH_HV</option><option>WRENCH_IV</option>
+                        <option>SCREWDRIVER_LV</option>
+                        <option>WIRE_CUTTER_LV</option><option>WIRE_CUTTER_HV</option><option>WIRE_CUTTER_IV</option>
                     </select>
-                    <input type="text" id="bEutField" placeholder="EUt (VA[EV])">
-                    <input type="text" id="bDurationField" placeholder="Duration (Ticks)">
-                </div>
-            </section>
+                </section>
 
-            <section class="card">
-                <h3>Fluid Pipes</h3>
-                <label class="enable-row"><input type="checkbox" id="enableFluidPipe"> <span>Enable Fluid Pipe</span></label>
-                <div class="grid-2">
-                    <input type="text" id="fPipeTemp" placeholder="Max Temp (K)">
-                    <input type="text" id="fPipeThroughput" placeholder="Throughput">
-                </div>
-                <div class="tool-options-grid">
-                    <label class="enable-row mini"><input type="checkbox" id="fGas"> <span>Gas</span></label>
-                    <label class="enable-row mini"><input type="checkbox" id="fAcid"> <span>Acid</span></label>
-                    <label class="enable-row mini"><input type="checkbox" id="fCryo"> <span>Cryo</span></label>
-                    <label class="enable-row mini"><input type="checkbox" id="fPlasma"> <span>Plasma</span></label>
-                </div>
-            </section>
+                <section class="card">
+                    <h3>Blast Furnace</h3>
+                    <div class="grid-2">
+                        <input type="number" id="bTempField" placeholder="Temp (K)">
+                        <select id="gasBox">
+                            <option value="null">No Gas</option>
+                            <option>LOW</option><option>MID</option><option>HIGH</option><option>HIGHER</option><option>HIGHEST</option>
+                        </select>
+                        <input type="text" id="bEutField" placeholder="EUt (VA[EV])">
+                        <input type="text" id="bDurationField" placeholder="Duration (Ticks)">
+                    </div>
+                </section>
 
-            <section class="card">
-                <h3>Cables</h3>
-                <label class="enable-row"><input type="checkbox" id="enableCable"> <span>Enable Cable</span></label>
-                <div class="grid-2">
-                    <input type="text" id="voltage" placeholder="Voltage (HV)">
-                    <input type="text" id="amperage" placeholder="Amperage (5)">
-                    <input type="text" id="lossPerBlock" placeholder="Loss/Block (3)">
-                    <label class="enable-row mini"><input type="checkbox" id="isSuperconductor"> <span>Superconductor</span></label>
-                </div>
-            </section>
+                <section class="card">
+                    <h3>Fluid Pipes</h3>
+                    <label class="enable-row"><input type="checkbox" id="enableFluidPipe"> <span>Enable Fluid Pipe</span></label>
+                    <div class="grid-2">
+                        <input type="text" id="fPipeTemp" placeholder="Max Temp (K)">
+                        <input type="text" id="fPipeThroughput" placeholder="Throughput">
+                    </div>
+                    <div class="tool-options-grid">
+                        <label class="enable-row mini"><input type="checkbox" id="fGas"> <span>Gas</span></label>
+                        <label class="enable-row mini"><input type="checkbox" id="fAcid"> <span>Acid</span></label>
+                        <label class="enable-row mini"><input type="checkbox" id="fCryo"> <span>Cryo</span></label>
+                        <label class="enable-row mini"><input type="checkbox" id="fPlasma"> <span>Plasma</span></label>
+                    </div>
+                </section>
 
-            <section class="card">
-                <h3>Item Pipes</h3>
-                <label class="enable-row"><input type="checkbox" id="enableItemPipe"> <span>Enable Item Pipe</span></label>
-                <div class="grid-2">
-                    <input type="text" id="itemPriority" placeholder="Priority (1)">
-                    <input type="text" id="itemStacks" placeholder="Stacks/Sec (1)">
-                </div>
-            </section>
+                <section class="card">
+                    <h3>Cables</h3>
+                    <label class="enable-row"><input type="checkbox" id="enableCable"> <span>Enable Cable</span></label>
+                    <div class="grid-2">
+                        <input type="text" id="voltage" placeholder="Voltage (HV)">
+                        <input type="text" id="amperage" placeholder="Amperage (5)">
+                        <input type="text" id="lossPerBlock" placeholder="Loss/Block (3)">
+                        <label class="enable-row mini"><input type="checkbox" id="isSuperconductor"> <span>Superconductor</span></label>
+                    </div>
+                </section>
 
-            <section class="card">
-                <h3>Rotors</h3>
-                <label class="enable-row"><input type="checkbox" id="enableRotor"> <span>Enable Rotor</span></label>
-                <div class="grid-2">
-                    <input type="text" id="rotorPower" placeholder="Power (130)">
-                    <input type="text" id="rotorEff" placeholder="Efficiency % (115)">
-                    <input type="text" id="rotorDamage" placeholder="Damage (3.0)">
-                    <input type="text" id="rotorDurability" placeholder="Durability (1600)">
-                </div>
-            </section>
+                <section class="card">
+                    <h3>Item Pipes</h3>
+                    <label class="enable-row"><input type="checkbox" id="enableItemPipe"> <span>Enable Item Pipe</span></label>
+                    <div class="grid-2">
+                        <input type="text" id="itemPriority" placeholder="Priority (1)">
+                        <input type="text" id="itemStacks" placeholder="Stacks/Sec (1)">
+                    </div>
+                </section>
 
-            <section class="card full-width">
-                <h3>Material Flags</h3>
-                <label class="small-label">Select Flags (Ctrl+Click for multiple selection)</label>
-                <select id="flagList" multiple size="12">
-                    <option>GENERATE_PLATE</option><option>GENERATE_DENSE</option><option>GENERATE_BOLT_SCREW</option>
-                    <option>GENERATE_ROD</option><option>GENERATE_LONG_ROD</option><option>GENERATE_GEAR</option>
-                    <option>GENERATE_SMALL_GEAR</option><option>GENERATE_FRAME</option><option>GENERATE_RING</option>
-                    <option>GENERATE_FOIL</option><option>GENERATE_SPRING</option><option>GENERATE_SPRING_SMALL</option>
-                    <option>GENERATE_FINE_WIRE</option><option>GENERATE_ROUND</option><option>GENERATE_ROTOR</option>
-                    <option>GENERATE_LENS</option><option>FORCE_GENERATE_BLOCK</option><option>EXCLUDE_BLOCK_CRAFTING_RECIPES</option>
-                    <option>EXCLUDE_PLATE_COMPRESSOR_RECIPE</option><option>EXCLUDE_BLOCK_CRAFTING_BY_HAND_RECIPES</option>
-                    <option>IS_MAGNETIC</option><option>PHOSPHORESCENT</option><option>EXPLOSIVE</option><option>FLAMMABLE</option>
-                    <option>STICKY</option><option>FIRE_RESISTANT</option><option>CRYSTALLIZABLE</option><option>MORTAR_GRINDABLE</option>
-                    <option>DECOMPOSITION_BY_CENTRIFUGING</option><option>DECOMPOSITION_BY_ELECTROLYZING</option>
-                    <option>DISABLE_DECOMPOSITION</option><option>HIGH_SIFTER_OUTPUT</option><option>NO_WORKING</option>
-                    <option>NO_SMASHING</option><option>NO_SMELTING</option><option>NO_ORE_SMELTING</option>
-                    <option>NO_ORE_PROCESSING_TAB</option><option>NO_UNIFICATION</option><option>BLAST_FURNACE_CALCITE_DOUBLE</option>
-                    <option>BLAST_FURNACE_CALCITE_TRIPLE</option><option>DISABLE_ALLOY_BLAST</option><option>DISABLE_ALLOY_PROPERTY</option>
-                </select>
-            </section>
+                <section class="card">
+                    <h3>Rotors</h3>
+                    <label class="enable-row"><input type="checkbox" id="enableRotor"> <span>Enable Rotor</span></label>
+                    <div class="grid-2">
+                        <input type="text" id="rotorPower" placeholder="Power (130)">
+                        <input type="text" id="rotorEff" placeholder="Efficiency % (115)">
+                        <input type="text" id="rotorDamage" placeholder="Damage (3.0)">
+                        <input type="text" id="rotorDurability" placeholder="Durability (1600)">
+                    </div>
+                </section>
+
+                <section class="card full-width">
+                    <h3>Material Flags</h3>
+                    <label class="small-label">Select Flags (Ctrl+Click)</label>
+                    <select id="flagList" multiple size="12">
+                        <option>GENERATE_PLATE</option><option>GENERATE_DENSE</option><option>GENERATE_BOLT_SCREW</option>
+                        <option>GENERATE_ROD</option><option>GENERATE_LONG_ROD</option><option>GENERATE_GEAR</option>
+                        <option>GENERATE_SMALL_GEAR</option><option>GENERATE_FRAME</option><option>GENERATE_RING</option>
+                        <option>GENERATE_FOIL</option><option>GENERATE_SPRING</option><option>GENERATE_SPRING_SMALL</option>
+                        <option>GENERATE_FINE_WIRE</option><option>GENERATE_ROUND</option><option>GENERATE_ROTOR</option>
+                        <option>GENERATE_LENS</option><option>FORCE_GENERATE_BLOCK</option><option>EXCLUDE_BLOCK_CRAFTING_RECIPES</option>
+                        <option>EXCLUDE_PLATE_COMPRESSOR_RECIPE</option><option>EXCLUDE_BLOCK_CRAFTING_BY_HAND_RECIPES</option>
+                        <option>IS_MAGNETIC</option><option>PHOSPHORESCENT</option><option>EXPLOSIVE</option><option>FLAMMABLE</option>
+                        <option>STICKY</option><option>FIRE_RESISTANT</option><option>CRYSTALLIZABLE</option><option>MORTAR_GRINDABLE</option>
+                        <option>DECOMPOSITION_BY_CENTRIFUGING</option><option>DECOMPOSITION_BY_ELECTROLYZING</option>
+                        <option>DISABLE_DECOMPOSITION</option><option>HIGH_SIFTER_OUTPUT</option><option>NO_WORKING</option>
+                        <option>NO_SMASHING</option><option>NO_SMELTING</option><option>NO_ORE_SMELTING</option>
+                        <option>NO_ORE_PROCESSING_TAB</option><option>NO_UNIFICATION</option><option>BLAST_FURNACE_CALCITE_DOUBLE</option>
+                        <option>BLAST_FURNACE_CALCITE_TRIPLE</option><option>DISABLE_ALLOY_BLAST</option><option>DISABLE_ALLOY_PROPERTY</option>
+                    </select>
+                </section>
+            </div>
+        </div>
+
+        <div id="labMainView" style="display: none; text-align: center; padding-top: 50px;">
+            <div style="background: #000; padding: 30px; border-radius: 20px; display: inline-block; border: 1px solid var(--border); box-shadow: 0 0 40px rgba(0,0,0,0.5);">
+                <canvas id="phoenixCanvas" width="16" height="16" style="width: 256px; height: 256px; image-rendering: pixelated; display: block;"></canvas>
+            </div>
+            <div style="margin-top: 30px;">
+                <button class="secondary-btn" style="border-color: #4caf50; color: #4caf50; padding: 12px 40px;" onclick="downloadResult()">Export 16x16 PNG</button>
+            </div>
         </div>
     </main>
 
@@ -179,7 +205,7 @@
         <h3 style="color: var(--accent); margin-bottom: 10px;">Generated Architect Code</h3>
         <pre><code id="materialOutput"></code></pre>
         <textarea id="langOutput" readonly placeholder="Language Provider output..."></textarea>
-        <button id="quickAqua" class="secondary-btn">Prepend §b (Aqua)</button>
+        <button id="quickAqua" class="secondary-btn" style="margin-top: 10px;">Prepend §b (Aqua)</button>
     </aside>
 </div>
 <script src="app.js"></script>
