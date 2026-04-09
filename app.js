@@ -1,15 +1,13 @@
 /**
  * PHOENIX SUITE - Master Edition
- * Final Stabilized Logic
+ * Fixed for Global Scope & GitHub Pages
  */
 
-// --- 1. GLOBAL STATE & ELEMENT REFS ---
+// 1. GLOBAL VARIABLES
 let layers = [];
-
-// These need to be accessible everywhere to stop the "wonkiness"
 let idField, nameField, colorField, secColorField, materialOutput, langOutput;
 
-// --- 2. VIEW SWITCHING ---
+// 2. GLOBAL VIEW SWITCHING (This fixes your back button)
 function switchView(view) {
     const archSidebar = document.getElementById('archSidebar');
     const labSidebar = document.getElementById('labSidebar');
@@ -38,36 +36,23 @@ function switchView(view) {
     }
 }
 
-// --- 3. THE ARCHITECT ENGINE ---
+// 3. ARCHITECT ENGINE
 function updateCode() {
     if (!materialOutput) return;
-
     const id = idField.value || "unknown";
     const kjs = document.getElementById('kubeJSMode').checked;
     const name = nameField.value || "Unknown";
     const indent = "    ";
     let sb = "";
 
-    // Header
-    if (kjs) {
-        sb += `event.create("${id}")\n`;
-    } else {
-        sb += `${id.toUpperCase()} = new Material.Builder(PhoenixCore.id("${id}"))\n`;
-    }
+    if (kjs) { sb += `event.create("${id}")\n`; }
+    else { sb += `${id.toUpperCase()} = new Material.Builder(PhoenixCore.id("${id}"))\n`; }
 
-    // Basic Forms
     ['ingot', 'dust', 'gem', 'plasma'].forEach(f => {
         const el = document.getElementById(f + 'Check');
         if (el && el.checked) sb += `${indent}.${f}()\n`;
     });
 
-    // Fluid Handling
-    const fluidCheck = document.getElementById('fluidCheck');
-    if (fluidCheck && fluidCheck.checked) {
-        sb += kjs ? `${indent}.liquid(new GTFluidBuilder())\n` : `${indent}.fluid()\n`;
-    }
-
-    // Colors & Icons
     const primary = colorField.value.replace('#','') || "FFFFFF";
     const secondary = secColorField.value.replace('#','');
     const iconSet = document.getElementById('iconSetBox').value;
@@ -77,37 +62,14 @@ function updateCode() {
     sb += "\n";
     sb += kjs ? `${indent}.iconSet("${iconSet.toLowerCase()}")\n` : `${indent}.iconSet(MaterialIconSet.${iconSet})\n`;
 
-    // Tool Logic
-    const toolCheck = document.getElementById('enableTools');
-    if (toolCheck && toolCheck.checked) {
-        const speed = document.getElementById('toolSpeed').value || "12.0";
-        const damage = document.getElementById('toolDamage').value || "8.0";
-        const durability = document.getElementById('toolDurability').value || "2048";
-        const level = document.getElementById('toolLevel').value || "4";
-        const selectedTools = Array.from(document.getElementById('toolTypeList').selectedOptions).map(o => `GTToolType.${o.value}`);
-        const typesStr = kjs ? `[${selectedTools.join(', ')}]` : `new GTToolType[]{${selectedTools.join(', ')}}`;
-
-        sb += `${indent}.toolStats(ToolProperty.Builder.of(${speed}, ${damage}, ${durability}, ${level}, ${typesStr})`;
-        if (document.getElementById('toolUnbreakable').checked) sb += `\n${indent}${indent}.unbreakable()`;
-        if (document.getElementById('toolMagnetic').checked) sb += `\n${indent}${indent}.magnetic()`;
-        sb += `\n${indent}${indent}.build())\n`;
-    }
-
-    // Final Flags
-    const flagList = document.getElementById('flagList');
-    const selectedFlags = Array.from(flagList.selectedOptions).map(o => (kjs ? "GTMaterialFlags." : "") + o.value);
-    if (selectedFlags.length > 0) sb += `${indent}.flags(${selectedFlags.join(', ')})\n`;
-
     if (!kjs) sb += `${indent}.buildAndRegister();`;
 
     materialOutput.textContent = sb;
     if (langOutput) langOutput.value = `addMaterialLang(provider, "${id}", "${name}");`;
-
-    // Also trigger a redraw of the texture lab if we change colors
     draw();
 }
 
-// --- 4. TEXTURE LAB ENGINE ---
+// 4. TEXTURE LAB ENGINE
 function addLayer() {
     const list = document.getElementById('layerList');
     if (!list) return;
@@ -158,10 +120,8 @@ function draw() {
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
     ctx.clearRect(0, 0, 16, 16);
-
     const p = (document.getElementById('colorField').value || "FFFFFF").replace('#','');
     const s = (document.getElementById('secColorField').value || "FFFFFF").replace('#','');
-
     layers.forEach(l => {
         if(!l.img) return;
         const b = document.createElement('canvas');
@@ -187,9 +147,8 @@ function downloadResult() {
     link.click();
 }
 
-// --- 5. INITIALIZATION ---
+// 5. INITIALIZATION
 document.addEventListener('DOMContentLoaded', () => {
-    // Link global variables to DOM elements
     idField = document.getElementById('idField');
     nameField = document.getElementById('nameField');
     colorField = document.getElementById('colorField');
@@ -197,7 +156,6 @@ document.addEventListener('DOMContentLoaded', () => {
     materialOutput = document.getElementById('materialOutput');
     langOutput = document.getElementById('langOutput');
 
-    // Utility Listeners
     document.getElementById('addSymbol').onclick = () => {
         nameField.value += '§';
         navigator.clipboard.writeText('§');
@@ -216,7 +174,6 @@ document.addEventListener('DOMContentLoaded', () => {
         if(e.target.value !== 'default') document.body.classList.add(`theme-${e.target.value}`);
     };
 
-    // Update triggers
     document.addEventListener('input', updateCode);
     updateCode();
 });
