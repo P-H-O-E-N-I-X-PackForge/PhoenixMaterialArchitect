@@ -39,20 +39,54 @@ function switchView(view) {
 // 3. ARCHITECT ENGINE
 function updateCode() {
     if (!materialOutput) return;
+
     const id = idField.value || "unknown";
     const kjs = document.getElementById('kubeJSMode').checked;
     const name = nameField.value || "Unknown";
     const indent = "    ";
     let sb = "";
 
-    if (kjs) { sb += `event.create("${id}")\n`; }
-    else { sb += `${id.toUpperCase()} = new Material.Builder(PhoenixCore.id("${id}"))\n`; }
+    // 1. Header Logic
+    if (kjs) {
+        sb += `event.create("${id}")\n`;
+    } else {
+        sb += `${id.toUpperCase()} = new Material.Builder(PhoenixCore.id("${id}"))\n`;
+    }
 
+    // 2. Basic Forms (Ingot, Dust, etc.)
     ['ingot', 'dust', 'gem', 'plasma'].forEach(f => {
         const el = document.getElementById(f + 'Check');
         if (el && el.checked) sb += `${indent}.${f}()\n`;
     });
 
+    // 3. Item Pipes (The part you were missing)
+    const itemPipeCheck = document.getElementById('enableItemPipe');
+    if (itemPipeCheck && itemPipeCheck.checked) {
+        const priority = document.getElementById('itemPriority').value || "1";
+        const stacks = document.getElementById('itemStacks').value || "1";
+        sb += `${indent}.itemPipe(${priority}, ${stacks})\n`;
+    }
+
+    // 4. Cables
+    const cableCheck = document.getElementById('enableCable');
+    if (cableCheck && cableCheck.checked) {
+        const volt = document.getElementById('voltage').value || "HV";
+        const amp = document.getElementById('amperage').value || "1";
+        const loss = document.getElementById('lossPerBlock').value || "1";
+        const supercon = document.getElementById('isSuperconductor').checked;
+        sb += `${indent}.cable(${volt}, ${amp}, ${loss}, ${supercon})\n`;
+    }
+
+    // 5. Fluid Pipes
+    const fluidPipeCheck = document.getElementById('enableFluidPipe');
+    if (fluidPipeCheck && fluidPipeCheck.checked) {
+        const fTemp = document.getElementById('fPipeTemp').value || "298";
+        const fFlow = document.getElementById('fPipeThroughput').value || "100";
+        const isGas = document.getElementById('fGas').checked;
+        sb += `${indent}.fluidPipe(${fTemp}, ${fFlow}, ${isGas})\n`;
+    }
+
+    // 6. Colors & Icons
     const primary = colorField.value.replace('#','') || "FFFFFF";
     const secondary = secColorField.value.replace('#','');
     const iconSet = document.getElementById('iconSetBox').value;
@@ -62,10 +96,18 @@ function updateCode() {
     sb += "\n";
     sb += kjs ? `${indent}.iconSet("${iconSet.toLowerCase()}")\n` : `${indent}.iconSet(MaterialIconSet.${iconSet})\n`;
 
+    // 7. Flags
+    const flagList = document.getElementById('flagList');
+    const selectedFlags = Array.from(flagList.selectedOptions).map(o => (kjs ? "GTMaterialFlags." : "") + o.value);
+    if (selectedFlags.length > 0) sb += `${indent}.flags(${selectedFlags.join(', ')})\n`;
+
     if (!kjs) sb += `${indent}.buildAndRegister();`;
 
+    // Update the UI
     materialOutput.textContent = sb;
     if (langOutput) langOutput.value = `addMaterialLang(provider, "${id}", "${name}");`;
+
+    // Sync to Texture Lab
     draw();
 }
 
