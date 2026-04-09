@@ -1,13 +1,13 @@
 /**
- * PHOENIX SUITE - Master Edition
- * Fixed for Global Scope & GitHub Pages
+ * PHOENIX SUITE - Unified Master Edition
+ * Combines full Architect logic with Texture Lab stability
  */
 
-// 1. GLOBAL VARIABLES
+// --- 1. GLOBAL STATE ---
 let layers = [];
 let idField, nameField, colorField, secColorField, materialOutput, langOutput;
 
-// 2. GLOBAL VIEW SWITCHING (This fixes your back button)
+// --- 2. GLOBAL VIEW SWITCHING ---
 function switchView(view) {
     const archSidebar = document.getElementById('archSidebar');
     const labSidebar = document.getElementById('labSidebar');
@@ -36,7 +36,7 @@ function switchView(view) {
     }
 }
 
-// 3. ARCHITECT ENGINE
+// --- 3. THE ARCHITECT ENGINE (Restored from your old logic) ---
 function updateCode() {
     if (!materialOutput) return;
 
@@ -46,47 +46,71 @@ function updateCode() {
     const indent = "    ";
     let sb = "";
 
-    // 1. Header Logic
+    // Header Logic
     if (kjs) {
         sb += `event.create("${id}")\n`;
     } else {
         sb += `${id.toUpperCase()} = new Material.Builder(PhoenixCore.id("${id}"))\n`;
     }
 
-    // 2. Basic Forms (Ingot, Dust, etc.)
+    // Basic Forms
     ['ingot', 'dust', 'gem', 'plasma'].forEach(f => {
         const el = document.getElementById(f + 'Check');
         if (el && el.checked) sb += `${indent}.${f}()\n`;
     });
 
-    // 3. Item Pipes (The part you were missing)
-    const itemPipeCheck = document.getElementById('enableItemPipe');
-    if (itemPipeCheck && itemPipeCheck.checked) {
+    // Fluid Handling
+    if (document.getElementById('fluidCheck').checked) {
+        sb += kjs ? `${indent}.liquid(new GTFluidBuilder())\n` : `${indent}.fluid()\n`;
+    }
+
+    // Blast Furnace Logic
+    const bt = parseInt(document.getElementById('bTempField').value);
+    if (bt > 0) {
+        const gas = document.getElementById('gasBox').value;
+        const gasVal = (gas === "null") ? "null" : (kjs ? `GTGasTier.${gas}` : `GasTier.${gas}`);
+        const eut = document.getElementById('bEutField').value || "VA[EV]";
+        const duration = document.getElementById('bDurationField').value || "1000";
+        sb += `${indent}.blastTemp(${bt}, ${gasVal}, GTValues.${eut}, ${duration})\n`;
+    }
+
+    // Fluid Pipes
+    if (document.getElementById('enableFluidPipe').checked) {
+        const fTemp = document.getElementById('fPipeTemp').value || "1000";
+        const fThrough = document.getElementById('fPipeThroughput').value || "128";
+        const gasProof = document.getElementById('fGas').checked;
+        const acidProof = document.getElementById('fAcid').checked;
+        const cryoProof = document.getElementById('fCryo').checked;
+        const plasmaProof = document.getElementById('fPlasma').checked;
+        sb += `${indent}.fluidPipeProperties(${fTemp}, ${fThrough}, ${gasProof}, ${acidProof}, ${cryoProof}, ${plasmaProof})\n`;
+    }
+
+    // Item Pipes
+    if (document.getElementById('enableItemPipe').checked) {
         const priority = document.getElementById('itemPriority').value || "1";
         const stacks = document.getElementById('itemStacks').value || "1";
-        sb += `${indent}.itemPipe(${priority}, ${stacks})\n`;
+        sb += `${indent}.itemPipeProperties(${priority}, ${stacks})\n`;
     }
 
-    // 4. Cables
-    const cableCheck = document.getElementById('enableCable');
-    if (cableCheck && cableCheck.checked) {
+    // Cables
+    if (document.getElementById('enableCable').checked) {
         const volt = document.getElementById('voltage').value || "HV";
-        const amp = document.getElementById('amperage').value || "1";
-        const loss = document.getElementById('lossPerBlock').value || "1";
+        const amp = document.getElementById('amperage').value || "5";
+        const loss = document.getElementById('lossPerBlock').value || "3";
         const supercon = document.getElementById('isSuperconductor').checked;
-        sb += `${indent}.cable(${volt}, ${amp}, ${loss}, ${supercon})\n`;
+        sb += `${indent}.cableProperties(GTValues.${volt}, ${amp}, ${loss}, ${supercon})\n`;
     }
 
-    // 5. Fluid Pipes
-    const fluidPipeCheck = document.getElementById('enableFluidPipe');
-    if (fluidPipeCheck && fluidPipeCheck.checked) {
-        const fTemp = document.getElementById('fPipeTemp').value || "298";
-        const fFlow = document.getElementById('fPipeThroughput').value || "100";
-        const isGas = document.getElementById('fGas').checked;
-        sb += `${indent}.fluidPipe(${fTemp}, ${fFlow}, ${isGas})\n`;
+    // Rotors
+    if (document.getElementById('enableRotor').checked) {
+        const rPwr = document.getElementById('rotorPower').value || "130";
+        const rEff = document.getElementById('rotorEff').value || "115";
+        const rDmg = document.getElementById('rotorDamage').value || "3.0";
+        const rDur = document.getElementById('rotorDurability').value || "1600";
+        sb += `${indent}.rotorStats(${rPwr}, ${rEff}, ${rDmg}F, ${rDur})\n`;
     }
 
-    // 6. Colors & Icons
+    // Colors & Icons
     const primary = colorField.value.replace('#','') || "FFFFFF";
     const secondary = secColorField.value.replace('#','');
     const iconSet = document.getElementById('iconSetBox').value;
@@ -96,22 +120,37 @@ function updateCode() {
     sb += "\n";
     sb += kjs ? `${indent}.iconSet("${iconSet.toLowerCase()}")\n` : `${indent}.iconSet(MaterialIconSet.${iconSet})\n`;
 
-    // 7. Flags
-    const flagList = document.getElementById('flagList');
-    const selectedFlags = Array.from(flagList.selectedOptions).map(o => (kjs ? "GTMaterialFlags." : "") + o.value);
+    // Tool Logic
+    if (document.getElementById('enableTools').checked) {
+        const speed = document.getElementById('toolSpeed').value || "12.0";
+        const damage = document.getElementById('toolDamage').value || "8.0";
+        const durability = document.getElementById('toolDurability').value || "2048";
+        const level = document.getElementById('toolLevel').value || "4";
+        const selectedTools = Array.from(document.getElementById('toolTypeList').selectedOptions).map(o => `GTToolType.${o.value}`);
+        const typesStr = kjs ? `[${selectedTools.join(', ')}]` : `new GTToolType[]{${selectedTools.join(', ')}}`;
+
+        if (document.getElementById('toolUnbreakable').checked || document.getElementById('toolMagnetic').checked) {
+            sb += `${indent}.toolStats(ToolProperty.Builder.of(${speed}, ${damage}, ${durability}, ${level}, ${typesStr})\n`;
+            if (document.getElementById('toolUnbreakable').checked) sb += `${indent}${indent}.unbreakable()\n`;
+            if (document.getElementById('toolMagnetic').checked) sb += `${indent}${indent}.magnetic()\n`;
+            sb += `${indent}${indent}.build())\n`;
+        } else {
+            sb += `${indent}.toolStats(ToolProperty.Builder.of(${speed}, ${damage}, ${durability}, ${level}, ${typesStr}).build())\n`;
+        }
+    }
+
+    // Flags
+    const selectedFlags = Array.from(document.getElementById('flagList').selectedOptions).map(o => (kjs ? "GTMaterialFlags." : "") + o.value);
     if (selectedFlags.length > 0) sb += `${indent}.flags(${selectedFlags.join(', ')})\n`;
 
     if (!kjs) sb += `${indent}.buildAndRegister();`;
 
-    // Update the UI
     materialOutput.textContent = sb;
     if (langOutput) langOutput.value = `addMaterialLang(provider, "${id}", "${name}");`;
-
-    // Sync to Texture Lab
     draw();
 }
 
-// 4. TEXTURE LAB ENGINE
+// --- 4. TEXTURE LAB ENGINE ---
 function addLayer() {
     const list = document.getElementById('layerList');
     if (!list) return;
@@ -189,7 +228,7 @@ function downloadResult() {
     link.click();
 }
 
-// 5. INITIALIZATION
+// --- 5. INITIALIZATION ---
 document.addEventListener('DOMContentLoaded', () => {
     idField = document.getElementById('idField');
     nameField = document.getElementById('nameField');
@@ -198,9 +237,16 @@ document.addEventListener('DOMContentLoaded', () => {
     materialOutput = document.getElementById('materialOutput');
     langOutput = document.getElementById('langOutput');
 
+    // Restore your "Copied!" button feedback logic
     document.getElementById('addSymbol').onclick = () => {
-        nameField.value += '§';
-        navigator.clipboard.writeText('§');
+        const symbol = '§';
+        nameField.value += symbol;
+        navigator.clipboard.writeText(symbol).then(() => {
+            const btn = document.getElementById('addSymbol');
+            const originalText = btn.textContent;
+            btn.textContent = 'Copied!';
+            setTimeout(() => btn.textContent = originalText, 1000);
+        });
         updateCode();
     };
 
