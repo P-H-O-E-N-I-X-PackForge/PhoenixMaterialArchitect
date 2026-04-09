@@ -1,13 +1,9 @@
 /**
  * PHOENIX SUITE - Deployment Ready Logic
- * Version: Master Edition (Global Scope Fix)
  */
 
-// --- 1. GLOBAL STATE ---
-let layers = [];
-
-// --- 2. GLOBAL VIEW SWITCHING (Accessible by HTML onclick) ---
-function switchView(view) {
+document.addEventListener('DOMContentLoaded', () => {
+    // --- ELEMENT SELECTORS ---
     const archSidebar = document.getElementById('archSidebar');
     const labSidebar = document.getElementById('labSidebar');
     const archMain = document.getElementById('archMainView');
@@ -15,35 +11,7 @@ function switchView(view) {
     const btnArch = document.getElementById('btnShowArch');
     const btnLab = document.getElementById('btnShowLab');
 
-    if (view === 'arch') {
-        if(archSidebar) archSidebar.style.display = 'block';
-        if(archMain) archMain.style.display = 'block';
-        if(labSidebar) labSidebar.style.display = 'none';
-        if(labMain) labMain.style.display = 'none';
-
-        btnArch.style.background = 'var(--accent)';
-        btnArch.style.color = 'white';
-        btnLab.style.background = 'var(--input)';
-        btnLab.style.color = '#ccc';
-    } else {
-        if(archSidebar) archSidebar.style.display = 'none';
-        if(archMain) archMain.style.display = 'none';
-        if(labSidebar) labSidebar.style.display = 'block';
-        if(labMain) labMain.style.display = 'block';
-
-        btnLab.style.background = 'var(--accent)';
-        btnLab.style.color = 'white';
-        btnArch.style.background = 'var(--input)';
-        btnArch.style.color = '#ccc';
-
-        // Auto-initialize first layer if empty
-        if (layers.length === 0) addLayer();
-        draw();
-    }
-}
-
-// --- 3. INITIALIZATION & ARCHITECT ENGINE ---
-document.addEventListener('DOMContentLoaded', () => {
+    // Checkboxes and Inputs
     const idField = document.getElementById('idField');
     const nameField = document.getElementById('nameField');
     const colorField = document.getElementById('colorField');
@@ -51,8 +19,38 @@ document.addEventListener('DOMContentLoaded', () => {
     const materialOutput = document.getElementById('materialOutput');
     const langOutput = document.getElementById('langOutput');
 
+    // --- VIEW SWITCHING LOGIC ---
+    if (btnArch && btnLab) {
+        btnArch.onclick = () => {
+            if(archSidebar) archSidebar.style.display = 'block';
+            if(archMain) archMain.style.display = 'block';
+            if(labSidebar) labSidebar.style.display = 'none';
+            if(labMain) labMain.style.display = 'none';
+
+            btnArch.style.background = 'var(--accent)';
+            btnLab.style.background = 'var(--input)';
+        };
+
+        btnLab.onclick = () => {
+            if(archSidebar) archSidebar.style.display = 'none';
+            if(archMain) archMain.style.display = 'none';
+            if(labSidebar) labSidebar.style.display = 'block';
+            if(labMain) labMain.style.display = 'block';
+
+            btnLab.style.background = 'var(--accent)';
+            btnArch.style.background = 'var(--input)';
+
+            if(typeof layers !== 'undefined' && layers.length === 0) {
+                addLayer();
+            }
+            draw(); // Initialize canvas
+        };
+    }
+
+    // --- ARCHITECT ENGINE ---
     function updateCode() {
         if (!materialOutput) return;
+
         const id = idField.value || "unknown";
         const kjs = document.getElementById('kubeJSMode').checked;
         const name = nameField.value || "Unknown";
@@ -115,39 +113,52 @@ document.addEventListener('DOMContentLoaded', () => {
         if (langOutput) langOutput.value = `addMaterialLang(provider, "${id}", "${name}");`;
     }
 
-    // Connect View Switchers (Double-layered protection)
-    document.getElementById('btnShowArch').onclick = () => switchView('arch');
-    document.getElementById('btnShowLab').onclick = () => switchView('lab');
-
-    // Utility Listeners
-    document.getElementById('addSymbol').onclick = () => {
-        nameField.value += '§';
-        navigator.clipboard.writeText('§');
-        updateCode();
-    };
-
-    document.getElementById('quickAqua').onclick = () => {
-        if (!nameField.value.startsWith('§b')) {
-            nameField.value = '§b' + nameField.value;
+    // --- UTILITIES ---
+    const addSymbolBtn = document.getElementById('addSymbol');
+    if (addSymbolBtn) {
+        addSymbolBtn.onclick = () => {
+            nameField.value += '§';
+            navigator.clipboard.writeText('§');
             updateCode();
-        }
-    };
+        };
+    }
 
-    document.getElementById('themePicker').onchange = (e) => {
-        document.body.classList.forEach(c => { if(c.startsWith('theme-')) document.body.classList.remove(c); });
-        if(e.target.value !== 'default') document.body.classList.add(`theme-${e.target.value}`);
-    };
+    const aquaBtn = document.getElementById('quickAqua');
+    if (aquaBtn) {
+        aquaBtn.onclick = () => {
+            if (!nameField.value.startsWith('§b')) {
+                nameField.value = '§b' + nameField.value;
+                updateCode();
+            }
+        };
+    }
 
+    const themePicker = document.getElementById('themePicker');
+    if (themePicker) {
+        themePicker.onchange = (e) => {
+            document.body.classList.forEach(c => { if(c.startsWith('theme-')) document.body.classList.remove(c); });
+            if(e.target.value !== 'default') document.body.classList.add(`theme-${e.target.value}`);
+        };
+    }
+
+    // Global listener for architect updates
     document.addEventListener('input', updateCode);
+
+    // Initial Run
     updateCode();
 });
 
-// --- 4. TEXTURE LAB ENGINE (Global Scope) ---
+// --- TEXTURE LAB GLOBALS (Defined outside for access) ---
+let layers = [];
+const canvas = document.getElementById('phoenixCanvas');
+
 function addLayer() {
     const list = document.getElementById('layerList');
     if (!list) return;
+
     const id = Date.now();
     layers.push({ id: id, img: null, type: 'p' });
+
     const div = document.createElement('div');
     div.className = 'layer-card';
     div.id = `ui-${id}`;
@@ -193,6 +204,7 @@ function draw() {
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
     ctx.clearRect(0, 0, 16, 16);
+
     const p = (document.getElementById('colorField').value || "FFFFFF").replace('#','');
     const s = (document.getElementById('secColorField').value || "FFFFFF").replace('#','');
 
@@ -202,6 +214,7 @@ function draw() {
         b.width = 16; b.height = 16;
         const bCtx = b.getContext('2d');
         bCtx.drawImage(l.img, 0, 0, 16, 16);
+
         if(l.type !== 'none') {
             bCtx.globalCompositeOperation = 'multiply';
             bCtx.fillStyle = `#${l.type === 'p' ? p : s}`;
@@ -211,12 +224,4 @@ function draw() {
         }
         ctx.drawImage(b, 0, 0);
     });
-}
-
-function downloadResult() {
-    const canvas = document.getElementById('phoenixCanvas');
-    const link = document.createElement('a');
-    link.download = 'material_texture.png';
-    link.href = canvas.toDataURL();
-    link.click();
 }
