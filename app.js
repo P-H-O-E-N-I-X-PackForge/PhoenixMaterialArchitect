@@ -1,9 +1,16 @@
 /**
- * PHOENIX SUITE - Deployment Ready Logic
+ * PHOENIX SUITE - Master Edition
+ * Final Stabilized Logic
  */
 
-document.addEventListener('DOMContentLoaded', () => {
-    // --- ELEMENT SELECTORS ---
+// --- 1. GLOBAL STATE & ELEMENT REFS ---
+let layers = [];
+
+// These need to be accessible everywhere to stop the "wonkiness"
+let idField, nameField, colorField, secColorField, materialOutput, langOutput;
+
+// --- 2. VIEW SWITCHING ---
+function switchView(view) {
     const archSidebar = document.getElementById('archSidebar');
     const labSidebar = document.getElementById('labSidebar');
     const archMain = document.getElementById('archMainView');
@@ -11,154 +18,101 @@ document.addEventListener('DOMContentLoaded', () => {
     const btnArch = document.getElementById('btnShowArch');
     const btnLab = document.getElementById('btnShowLab');
 
-    // Checkboxes and Inputs
-    const idField = document.getElementById('idField');
-    const nameField = document.getElementById('nameField');
-    const colorField = document.getElementById('colorField');
-    const secColorField = document.getElementById('secColorField');
-    const materialOutput = document.getElementById('materialOutput');
-    const langOutput = document.getElementById('langOutput');
+    if (view === 'arch') {
+        archSidebar.style.display = 'block';
+        archMain.style.display = 'block';
+        labSidebar.style.display = 'none';
+        labMain.style.display = 'none';
+        btnArch.style.background = 'var(--accent)';
+        btnLab.style.background = 'var(--input)';
+    } else {
+        archSidebar.style.display = 'none';
+        archMain.style.display = 'none';
+        labSidebar.style.display = 'block';
+        labMain.style.display = 'block';
+        btnLab.style.background = 'var(--accent)';
+        btnArch.style.background = 'var(--input)';
 
-    // --- VIEW SWITCHING LOGIC ---
-    if (btnArch && btnLab) {
-        btnArch.onclick = () => {
-            if(archSidebar) archSidebar.style.display = 'block';
-            if(archMain) archMain.style.display = 'block';
-            if(labSidebar) labSidebar.style.display = 'none';
-            if(labMain) labMain.style.display = 'none';
+        if (layers.length === 0) addLayer();
+        draw();
+    }
+}
 
-            btnArch.style.background = 'var(--accent)';
-            btnLab.style.background = 'var(--input)';
-        };
+// --- 3. THE ARCHITECT ENGINE ---
+function updateCode() {
+    if (!materialOutput) return;
 
-        btnLab.onclick = () => {
-            if(archSidebar) archSidebar.style.display = 'none';
-            if(archMain) archMain.style.display = 'none';
-            if(labSidebar) labSidebar.style.display = 'block';
-            if(labMain) labMain.style.display = 'block';
+    const id = idField.value || "unknown";
+    const kjs = document.getElementById('kubeJSMode').checked;
+    const name = nameField.value || "Unknown";
+    const indent = "    ";
+    let sb = "";
 
-            btnLab.style.background = 'var(--accent)';
-            btnArch.style.background = 'var(--input)';
-
-            if(typeof layers !== 'undefined' && layers.length === 0) {
-                addLayer();
-            }
-            draw(); // Initialize canvas
-        };
+    // Header
+    if (kjs) {
+        sb += `event.create("${id}")\n`;
+    } else {
+        sb += `${id.toUpperCase()} = new Material.Builder(PhoenixCore.id("${id}"))\n`;
     }
 
-    // --- ARCHITECT ENGINE ---
-    function updateCode() {
-        if (!materialOutput) return;
+    // Basic Forms
+    ['ingot', 'dust', 'gem', 'plasma'].forEach(f => {
+        const el = document.getElementById(f + 'Check');
+        if (el && el.checked) sb += `${indent}.${f}()\n`;
+    });
 
-        const id = idField.value || "unknown";
-        const kjs = document.getElementById('kubeJSMode').checked;
-        const name = nameField.value || "Unknown";
-        const indent = "    ";
-        let sb = "";
-
-        // Header
-        if (kjs) {
-            sb += `event.create("${id}")\n`;
-        } else {
-            sb += `${id.toUpperCase()} = new Material.Builder(PhoenixCore.id("${id}"))\n`;
-        }
-
-        // Basic Forms
-        ['ingot', 'dust', 'gem', 'plasma'].forEach(f => {
-            const el = document.getElementById(f + 'Check');
-            if (el && el.checked) sb += `${indent}.${f}()\n`;
-        });
-
-        // Fluid Handling
-        const fluidCheck = document.getElementById('fluidCheck');
-        if (fluidCheck && fluidCheck.checked) {
-            sb += kjs ? `${indent}.liquid(new GTFluidBuilder())\n` : `${indent}.fluid()\n`;
-        }
-
-        // Colors & Icons
-        const primary = colorField.value.replace('#','') || "FFFFFF";
-        const secondary = secColorField.value.replace('#','');
-        const iconSet = document.getElementById('iconSetBox').value;
-
-        sb += `${indent}.color(0x${primary})`;
-        if (secondary) sb += `.secondaryColor(0x${secondary})`;
-        sb += "\n";
-        sb += kjs ? `${indent}.iconSet("${iconSet.toLowerCase()}")\n` : `${indent}.iconSet(MaterialIconSet.${iconSet})\n`;
-
-        // Tool Logic
-        const toolCheck = document.getElementById('enableTools');
-        if (toolCheck && toolCheck.checked) {
-            const speed = document.getElementById('toolSpeed').value || "12.0";
-            const damage = document.getElementById('toolDamage').value || "8.0";
-            const durability = document.getElementById('toolDurability').value || "2048";
-            const level = document.getElementById('toolLevel').value || "4";
-            const selectedTools = Array.from(document.getElementById('toolTypeList').selectedOptions).map(o => `GTToolType.${o.value}`);
-            const typesStr = kjs ? `[${selectedTools.join(', ')}]` : `new GTToolType[]{${selectedTools.join(', ')}}`;
-
-            sb += `${indent}.toolStats(ToolProperty.Builder.of(${speed}, ${damage}, ${durability}, ${level}, ${typesStr})`;
-            if (document.getElementById('toolUnbreakable').checked) sb += `\n${indent}${indent}.unbreakable()`;
-            if (document.getElementById('toolMagnetic').checked) sb += `\n${indent}${indent}.magnetic()`;
-            sb += `\n${indent}${indent}.build())\n`;
-        }
-
-        // Final Flags
-        const flagList = document.getElementById('flagList');
-        const selectedFlags = Array.from(flagList.selectedOptions).map(o => (kjs ? "GTMaterialFlags." : "") + o.value);
-        if (selectedFlags.length > 0) sb += `${indent}.flags(${selectedFlags.join(', ')})\n`;
-
-        if (!kjs) sb += `${indent}.buildAndRegister();`;
-
-        materialOutput.textContent = sb;
-        if (langOutput) langOutput.value = `addMaterialLang(provider, "${id}", "${name}");`;
+    // Fluid Handling
+    const fluidCheck = document.getElementById('fluidCheck');
+    if (fluidCheck && fluidCheck.checked) {
+        sb += kjs ? `${indent}.liquid(new GTFluidBuilder())\n` : `${indent}.fluid()\n`;
     }
 
-    // --- UTILITIES ---
-    const addSymbolBtn = document.getElementById('addSymbol');
-    if (addSymbolBtn) {
-        addSymbolBtn.onclick = () => {
-            nameField.value += '§';
-            navigator.clipboard.writeText('§');
-            updateCode();
-        };
+    // Colors & Icons
+    const primary = colorField.value.replace('#','') || "FFFFFF";
+    const secondary = secColorField.value.replace('#','');
+    const iconSet = document.getElementById('iconSetBox').value;
+
+    sb += `${indent}.color(0x${primary})`;
+    if (secondary) sb += `.secondaryColor(0x${secondary})`;
+    sb += "\n";
+    sb += kjs ? `${indent}.iconSet("${iconSet.toLowerCase()}")\n` : `${indent}.iconSet(MaterialIconSet.${iconSet})\n`;
+
+    // Tool Logic
+    const toolCheck = document.getElementById('enableTools');
+    if (toolCheck && toolCheck.checked) {
+        const speed = document.getElementById('toolSpeed').value || "12.0";
+        const damage = document.getElementById('toolDamage').value || "8.0";
+        const durability = document.getElementById('toolDurability').value || "2048";
+        const level = document.getElementById('toolLevel').value || "4";
+        const selectedTools = Array.from(document.getElementById('toolTypeList').selectedOptions).map(o => `GTToolType.${o.value}`);
+        const typesStr = kjs ? `[${selectedTools.join(', ')}]` : `new GTToolType[]{${selectedTools.join(', ')}}`;
+
+        sb += `${indent}.toolStats(ToolProperty.Builder.of(${speed}, ${damage}, ${durability}, ${level}, ${typesStr})`;
+        if (document.getElementById('toolUnbreakable').checked) sb += `\n${indent}${indent}.unbreakable()`;
+        if (document.getElementById('toolMagnetic').checked) sb += `\n${indent}${indent}.magnetic()`;
+        sb += `\n${indent}${indent}.build())\n`;
     }
 
-    const aquaBtn = document.getElementById('quickAqua');
-    if (aquaBtn) {
-        aquaBtn.onclick = () => {
-            if (!nameField.value.startsWith('§b')) {
-                nameField.value = '§b' + nameField.value;
-                updateCode();
-            }
-        };
-    }
+    // Final Flags
+    const flagList = document.getElementById('flagList');
+    const selectedFlags = Array.from(flagList.selectedOptions).map(o => (kjs ? "GTMaterialFlags." : "") + o.value);
+    if (selectedFlags.length > 0) sb += `${indent}.flags(${selectedFlags.join(', ')})\n`;
 
-    const themePicker = document.getElementById('themePicker');
-    if (themePicker) {
-        themePicker.onchange = (e) => {
-            document.body.classList.forEach(c => { if(c.startsWith('theme-')) document.body.classList.remove(c); });
-            if(e.target.value !== 'default') document.body.classList.add(`theme-${e.target.value}`);
-        };
-    }
+    if (!kjs) sb += `${indent}.buildAndRegister();`;
 
-    // Global listener for architect updates
-    document.addEventListener('input', updateCode);
+    materialOutput.textContent = sb;
+    if (langOutput) langOutput.value = `addMaterialLang(provider, "${id}", "${name}");`;
 
-    // Initial Run
-    updateCode();
-});
+    // Also trigger a redraw of the texture lab if we change colors
+    draw();
+}
 
-// --- TEXTURE LAB GLOBALS (Defined outside for access) ---
-let layers = [];
-const canvas = document.getElementById('phoenixCanvas');
-
+// --- 4. TEXTURE LAB ENGINE ---
 function addLayer() {
     const list = document.getElementById('layerList');
     if (!list) return;
-
     const id = Date.now();
     layers.push({ id: id, img: null, type: 'p' });
-
     const div = document.createElement('div');
     div.className = 'layer-card';
     div.id = `ui-${id}`;
@@ -214,7 +168,6 @@ function draw() {
         b.width = 16; b.height = 16;
         const bCtx = b.getContext('2d');
         bCtx.drawImage(l.img, 0, 0, 16, 16);
-
         if(l.type !== 'none') {
             bCtx.globalCompositeOperation = 'multiply';
             bCtx.fillStyle = `#${l.type === 'p' ? p : s}`;
@@ -225,3 +178,45 @@ function draw() {
         ctx.drawImage(b, 0, 0);
     });
 }
+
+function downloadResult() {
+    const canvas = document.getElementById('phoenixCanvas');
+    const link = document.createElement('a');
+    link.download = 'material_texture.png';
+    link.href = canvas.toDataURL();
+    link.click();
+}
+
+// --- 5. INITIALIZATION ---
+document.addEventListener('DOMContentLoaded', () => {
+    // Link global variables to DOM elements
+    idField = document.getElementById('idField');
+    nameField = document.getElementById('nameField');
+    colorField = document.getElementById('colorField');
+    secColorField = document.getElementById('secColorField');
+    materialOutput = document.getElementById('materialOutput');
+    langOutput = document.getElementById('langOutput');
+
+    // Utility Listeners
+    document.getElementById('addSymbol').onclick = () => {
+        nameField.value += '§';
+        navigator.clipboard.writeText('§');
+        updateCode();
+    };
+
+    document.getElementById('quickAqua').onclick = () => {
+        if (!nameField.value.startsWith('§b')) {
+            nameField.value = '§b' + nameField.value;
+            updateCode();
+        }
+    };
+
+    document.getElementById('themePicker').onchange = (e) => {
+        document.body.classList.forEach(c => { if(c.startsWith('theme-')) document.body.classList.remove(c); });
+        if(e.target.value !== 'default') document.body.classList.add(`theme-${e.target.value}`);
+    };
+
+    // Update triggers
+    document.addEventListener('input', updateCode);
+    updateCode();
+});
