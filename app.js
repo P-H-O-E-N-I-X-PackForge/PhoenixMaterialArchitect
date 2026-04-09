@@ -46,62 +46,55 @@ function updateCode() {
     const indent = "    ";
     let sb = "";
 
-    // Header Logic
+    // 1. Header
     if (kjs) {
         sb += `event.create("${id}")\n`;
     } else {
         sb += `${id.toUpperCase()} = new Material.Builder(PhoenixCore.id("${id}"))\n`;
     }
 
-    // Basic Forms
+    // 2. Basic Forms
     ['ingot', 'dust', 'gem', 'plasma'].forEach(f => {
         const el = document.getElementById(f + 'Check');
         if (el && el.checked) sb += `${indent}.${f}()\n`;
     });
 
-    // Fluid Handling
     if (document.getElementById('fluidCheck').checked) {
         sb += kjs ? `${indent}.liquid(new GTFluidBuilder())\n` : `${indent}.fluid()\n`;
     }
 
-    // Blast Furnace Logic
+    // 3. Blast Furnace (Fixed logic)
     const bt = parseInt(document.getElementById('bTempField').value);
     if (bt > 0) {
         const gas = document.getElementById('gasBox').value;
         const gasVal = (gas === "null") ? "null" : (kjs ? `GTGasTier.${gas}` : `GasTier.${gas}`);
         const eut = document.getElementById('bEutField').value || "VA[EV]";
         const duration = document.getElementById('bDurationField').value || "1000";
+        // Uses the specific formatting from your old code
         sb += `${indent}.blastTemp(${bt}, ${gasVal}, GTValues.${eut}, ${duration})\n`;
     }
 
-    // Fluid Pipes
+    // 4. Component Properties (Pipes/Cables)
     if (document.getElementById('enableFluidPipe').checked) {
         const fTemp = document.getElementById('fPipeTemp').value || "1000";
         const fThrough = document.getElementById('fPipeThroughput').value || "128";
-        const gasProof = document.getElementById('fGas').checked;
-        const acidProof = document.getElementById('fAcid').checked;
-        const cryoProof = document.getElementById('fCryo').checked;
-        const plasmaProof = document.getElementById('fPlasma').checked;
-        sb += `${indent}.fluidPipeProperties(${fTemp}, ${fThrough}, ${gasProof}, ${acidProof}, ${cryoProof}, ${plasmaProof})\n`;
+        sb += `${indent}.fluidPipeProperties(${fTemp}, ${fThrough}, ${document.getElementById('fGas').checked}, ${document.getElementById('fAcid').checked}, ${document.getElementById('fCryo').checked}, ${document.getElementById('fPlasma').checked})\n`;
     }
 
-    // Item Pipes
     if (document.getElementById('enableItemPipe').checked) {
         const priority = document.getElementById('itemPriority').value || "1";
         const stacks = document.getElementById('itemStacks').value || "1";
         sb += `${indent}.itemPipeProperties(${priority}, ${stacks})\n`;
     }
 
-    // Cables
     if (document.getElementById('enableCable').checked) {
         const volt = document.getElementById('voltage').value || "HV";
         const amp = document.getElementById('amperage').value || "5";
         const loss = document.getElementById('lossPerBlock').value || "3";
-        const supercon = document.getElementById('isSuperconductor').checked;
-        sb += `${indent}.cableProperties(GTValues.${volt}, ${amp}, ${loss}, ${supercon})\n`;
+        sb += `${indent}.cableProperties(GTValues.${volt}, ${amp}, ${loss}, ${document.getElementById('isSuperconductor').checked})\n`;
     }
 
-    // Rotors
+    // 5. Rotors (Restored "F" float notation)
     if (document.getElementById('enableRotor').checked) {
         const rPwr = document.getElementById('rotorPower').value || "130";
         const rEff = document.getElementById('rotorEff').value || "115";
@@ -110,17 +103,16 @@ function updateCode() {
         sb += `${indent}.rotorStats(${rPwr}, ${rEff}, ${rDmg}F, ${rDur})\n`;
     }
 
-    // Colors & Icons
+    // 6. Colors & Icons
     const primary = colorField.value.replace('#','') || "FFFFFF";
     const secondary = secColorField.value.replace('#','');
     const iconSet = document.getElementById('iconSetBox').value;
-
     sb += `${indent}.color(0x${primary})`;
     if (secondary) sb += `.secondaryColor(0x${secondary})`;
     sb += "\n";
     sb += kjs ? `${indent}.iconSet("${iconSet.toLowerCase()}")\n` : `${indent}.iconSet(MaterialIconSet.${iconSet})\n`;
 
-    // Tool Logic
+    // 7. Tools (Fixed multi-select and builder logic)
     if (document.getElementById('enableTools').checked) {
         const speed = document.getElementById('toolSpeed').value || "12.0";
         const damage = document.getElementById('toolDamage').value || "8.0";
@@ -139,7 +131,7 @@ function updateCode() {
         }
     }
 
-    // Flags
+    // 8. Flags
     const selectedFlags = Array.from(document.getElementById('flagList').selectedOptions).map(o => (kjs ? "GTMaterialFlags." : "") + o.value);
     if (selectedFlags.length > 0) sb += `${indent}.flags(${selectedFlags.join(', ')})\n`;
 
@@ -147,7 +139,6 @@ function updateCode() {
 
     materialOutput.textContent = sb;
     if (langOutput) langOutput.value = `addMaterialLang(provider, "${id}", "${name}");`;
-    draw();
 }
 
 // --- 4. TEXTURE LAB ENGINE ---
