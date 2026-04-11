@@ -1022,56 +1022,83 @@ function switchTab(tab, el){
 }
 
 // ── GitHub Fetch ─────────────────────────────
-async function fetchGithub(){
-  const rawInput=document.getElementById('ghRepo').value.trim();
-  const path=document.getElementById('ghPath').value.trim();
-  const branch=document.getElementById('ghBranch').value.trim()||'main';
-  const token=document.getElementById('ghToken').value.trim();
-  const type=document.getElementById('ghType').value;
-  const statusEl=document.getElementById('ghStatus');
-  const prog=document.getElementById('ghProg');
-  const bar=document.getElementById('ghBar');
+async function fetchGithub() {
+  const repo = document.getElementById('ghRepo').value.trim();
+  const path = document.getElementById('ghPath').value.trim();
+  const branch = document.getElementById('ghBranch').value.trim() || 'main';
+  const token = document.getElementById('ghToken').value.trim();
+  const type = document.getElementById('ghType').value;
+  const status = document.getElementById('ghStatus');
+  const prog = document.getElementById('ghProg');
+  const bar = document.getElementById('ghBar');
 
-  let url;
-  if(rawInput.startsWith('http')){
-    url=rawInput;
-  } else {
-    if(!path){statusEl.textContent='⚠ Enter a file path.';statusEl.style.color='var(--orange)';return;}
-    url=`https://raw.githubusercontent.com/${rawInput}/${branch}/${path}`;
-  }
+  if (!repo) { notify('Repo is required.'); return; }
 
-  statusEl.textContent='Fetching...'; prog.style.display='block'; bar.style.width='20%';
-  statusEl.style.color='var(--text-dim)';
+  // Clean repo name in case user pasted full URL
+  const repoClean = repo.replace('https://github.com/', '').replace(/\/$/, '');
 
-  try{
-    const headers={};
-    if(token) headers['Authorization']='token '+token;
-    const res=await fetch(url,{headers});
-    bar.style.width='50%';
-    if(!res.ok) throw new Error(`HTTP ${res.status}: ${res.statusText}`);
-    const src=await res.text();
-    bar.style.width='70%';
+  try {
+    status.textContent = "Scanning directory...";
+    prog.style.display = 'block';
+    bar.style.width = '10%';
 
-    let imported=0;
-    if(type==='kjs'){
-      document.getElementById('kjsInput').value=src;
-      // parse directly
-      imported=await parseSrcKJS(src,(p)=>{bar.style.width=(70+p*30)+'%';});
-    } else {
-      document.getElementById('javaInput').value=src;
-      imported=await parseSrcJava(src,(p)=>{bar.style.width=(70+p*30)+'%';});
+    // 1. Get the entire file tree for the branch
+    const treeUrl = `https://api.github.com/repos/${repoClean}/git/trees/${branch}?recursive=1`;
+    const headers = token ? { 'Authorization': `token ${token}` } : {};
+
+    const treeRes = await fetch(treeUrl, { headers });
+    if (!treeRes.ok) throw new Error(`GitHub API Error: ${treeRes.statusText}`);
+
+    const treeData = await treeRes.json();
+
+    // 2. Filter for files inside your path with the right extension
+    const extension = type === 'kjs' ? '.js' : '.java';
+    const filesToFetch = treeData.tree.filter(file =>
+            file.path.startsWith(path) &&
+            file.path.endsWith(extension) &&
+            file.type === 'blob'
+    );
+
+    if (filesToFetch.length === 0) {
+      status.textContent = "No matching files found in that path.";
+      return;
     }
 
-    bar.style.width='100%';
-    dbSave(); renderList();
-    prog.style.display='none';
-    statusEl.textContent=`✓ Imported ${imported} recipes from GitHub`;
-    statusEl.style.color='var(--green)';
-    if(imported>0){notify(`Imported ${imported} from GitHub.`);setTimeout(closeImport,900);}
-  } catch(e){
-    prog.style.display='none';
-    statusEl.textContent='✗ '+e.message;
-    statusEl.style.color='var(--red)';
+    status.textContent = `Found ${filesToFetch.length} files. Fetching...`;
+    let loadedCount = 0;
+
+    // 3. Loop and fetch each file
+    for (const file of filesToFetch) {
+      const rawUrl = `https://raw.githubusercontent.com/${repoClean}/${branch}/${file.path}`;
+      const fileRes = await fetch(rawUrl, { headers });
+
+      if (fileRes.ok) {
+        const content = await fileRes.text();
+
+        // Feed content into your existing parsers
+        if (type === 'kjs') {
+          // Put content into textarea and call your parser
+          document.getElementById('kjsInput').value = content;
+          await parseKJS();
+        } else {
+          document.getElementById('javaInput').value = content;
+          await parseJava();
+        }
+      }
+
+      loadedCount++;
+      bar.style.width = `${(loadedCount / filesToFetch.length) * 100}%`;
+      status.textContent = `Imported ${loadedCount}/${filesToFetch.length} files...`;
+    }
+
+    notify(`Successfully imported recipes from ${loadedCount} files.`);
+    status.textContent = "Done.";
+    setTimeout(closeImport, 1500);
+
+  } catch (err) {
+    console.error(err);
+    status.textContent = "Error: " + err.message;
+    notify("Import failed. Check console.");
   }
 }
 
