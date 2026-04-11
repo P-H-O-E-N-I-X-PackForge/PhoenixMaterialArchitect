@@ -35,10 +35,10 @@
             <select id="iconSetBox">
                 <option>METALLIC</option><option>SHINY</option><option>DULL</option><option>MAGNETIC</option>
                 <option>BRIGHT</option><option>DIAMOND</option><option>EMERALD</option><option>RUBY</option>
-                <option>OPAL</option><option>GLASS</option><option>NETHERSTAR</option><option>FINE</option>
+                <option>OPAL</option><option>GLASS</option><option>RADIOACTIVE</option><option>NETHERSTAR</option><option>FINE</option>
                 <option>SAND</option><option>WOOD</option><option>ROUGH</option><option>FLINT</option>
                 <option>LIGNITE</option><option>QUARTZ</option><option>CERTUS</option><option>LAPIS</option>
-                <option>FLUID</option><option>GEM_HORIZONTAL</option><option>GEM_VERTICAL</option>
+                <option>FLUID</option><option>GEM_HORIZONTAL</option><option>GEM_VERTICAL</option><option>ALMOST_PURE_NEVONIAN_STEEL</option>
             </select>
         </section>
 
@@ -71,12 +71,50 @@
 
         <div id="labSidebar" style="display: none;">
             <section class="card">
+                <h3>Icon Set Preview</h3>
+                <p style="font-size: 9px; margin-bottom: 8px; opacity: 0.7;">Select a base shape to preview:</p>
+                <select id="labIconSetPreview" onchange="loadSetTemplate(this.value)">
+                    <option value="none">-- None (Manual Only) --</option>
+                    <option value="nugget">Nugget</option>
+                    <option value="ingot">Ingot</option>
+                    <option value="ingot_hot">Hot Ingot</option>
+                    <option value="plate_double">Double Plate</option>
+                    <option value="plate_dense">Dense Plate</option>
+                    <option value="plate">Plate</option>
+                    <option value="gem">Gem</option>
+                    <option value="dust">Dust</option>
+                    <option value="dust_small">Dust Small</option>
+                    <option value="dust_tiny">Dust Tiny</option>
+                    <option value="gear">Gear</option>
+                    <option value="gear_small">Small Gear</option>
+                    <option value="foil">Foil</option>
+                    <option value="ring">Ring</option>
+                    <option value="rod">Rod</option>
+                    <option value="rod_long">Long Rod</option>
+                    <option value="bolt">Bolt</option>
+                    <option value="screw">Screw</option>
+                    <option value="rotor">Rotor</option>
+                    <option value="round">Round</option>
+                    <option value="spring">Spring</option>
+                    <option value="small_spring">Small Spring</option>
+                    <option value="wire_fine">Fine Wire</option>
+                    <option value="crystal_rose">Crystal Rose</option>
+                    <option value="nanites">Nanites</option>
+                </select>
+                <div style="margin-top: 10px; font-size: 9px; color: var(--accent); word-break: break-all;">
+                    Path: <span id="pathDisplay" style="color: #ccc;">src/textures/item/material_sets/...</span>
+                </div>
+            </section>
+
+            <section class="card">
                 <h3>Texture Layers</h3>
                 <div id="layerList"></div>
                 <button class="secondary-btn" style="width: 100%; margin-top: 10px;" onclick="addLayer()">+ Add Layer</button>
             </section>
         </div>
     </aside>
+
+
 
     <main class="main-content">
         <div id="archMainView">
@@ -176,7 +214,7 @@
                         <option>GENERATE_ROD</option><option>GENERATE_LONG_ROD</option><option>GENERATE_GEAR</option>
                         <option>GENERATE_SMALL_GEAR</option><option>GENERATE_FRAME</option><option>GENERATE_RING</option>
                         <option>GENERATE_FOIL</option><option>GENERATE_SPRING</option><option>GENERATE_SPRING_SMALL</option>
-                        <option>GENERATE_FINE_WIRE</option><option>GENERATE_ROUND</option><option>GENERATE_ROTOR</option>
+                        <option>GENERATE_FINE_WIRE</option><option>GENERATE_ROUND</option><option>GENERATE_ROTOR</option><option>GENERATE_CRYSTAL_ROSE</option>
                         <option>GENERATE_LENS</option><option>FORCE_GENERATE_BLOCK</option><option>EXCLUDE_BLOCK_CRAFTING_RECIPES</option>
                         <option>EXCLUDE_PLATE_COMPRESSOR_RECIPE</option><option>EXCLUDE_BLOCK_CRAFTING_BY_HAND_RECIPES</option>
                         <option>IS_MAGNETIC</option><option>PHOSPHORESCENT</option><option>EXPLOSIVE</option><option>FLAMMABLE</option>
@@ -190,15 +228,34 @@
                 </section>
             </div>
         </div>
-
         <div id="labMainView" style="display: none; text-align: center; padding-top: 50px;">
-            <div style="background: #000; padding: 30px; border-radius: 20px; display: inline-block; border: 1px solid var(--border); box-shadow: 0 0 40px rgba(0,0,0,0.5);">
+            <div style="margin-bottom: 20px;">
+                <div class="card" style="display: inline-flex; gap: 5px; padding: 5px; background: var(--input);">
+                    <button id="toggleItemView" class="secondary-btn" onclick="setLabMode('item')" style="background: var(--accent); color: white; min-width: 120px;">Item Preview</button>
+                    <button id="toggleBlockView" class="secondary-btn" onclick="setLabMode('block')" style="min-width: 120px;">Block Preview</button>
+                </div>
+            </div>
+
+            <div id="itemPreviewContainer" style="background: #000; padding: 30px; border-radius: 20px; display: inline-block; border: 1px solid var(--border); box-shadow: 0 0 40px rgba(0,0,0,0.5);">
                 <canvas id="phoenixCanvas" width="16" height="16" style="width: 256px; height: 256px; image-rendering: pixelated; display: block;"></canvas>
             </div>
+
+            <div id="blockPreviewContainer" style="display: none; height: 350px; perspective: 1000px; justify-content: center; align-items: center;">
+                <div class="cube">
+                    <div class="face front"></div>
+                    <div class="face back"></div>
+                    <div class="face right"></div>
+                    <div class="face left"></div>
+                    <div class="face top"></div>
+                    <div class="face bottom"></div>
+                </div>
+            </div>
+
             <div style="margin-top: 30px;">
                 <button class="secondary-btn" style="border-color: #4caf50; color: #4caf50; padding: 12px 40px;" onclick="downloadResult()">Export 16x16 PNG</button>
             </div>
         </div>
+
     </main>
 
     <aside class="output-sidebar">

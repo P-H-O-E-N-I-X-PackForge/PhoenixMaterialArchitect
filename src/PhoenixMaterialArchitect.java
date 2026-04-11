@@ -99,6 +99,7 @@ public class PhoenixMaterialArchitect extends JFrame {
                 "SHINY",
                 "DULL",
                 "METALLIC",
+                "RADIOACTIVE",
                 "MAGNETIC",
                 "SHINY",
                 "BRIGHT",
@@ -118,6 +119,7 @@ public class PhoenixMaterialArchitect extends JFrame {
                 "CERTUS",
                 "LAPIS",
                 "FLUID",
+                "ALMOST_PURE_NEVONIAN_STEEL",
                 "GEM_HORIZONTAL",
                 "GEM_VERTICAL"});
 
@@ -285,6 +287,7 @@ public class PhoenixMaterialArchitect extends JFrame {
                 "GENERATE_FINE_WIRE",
                 "GENERATE_ROUND",
                 "GENERATE_ROTOR",
+                "GENERATE_CRYSTAL_ROSE",
                 "PHOSPHORESCENT",
                 "IS_MAGNETIC",
                 "FORCE_GENERATE_BLOCK",

@@ -201,3 +201,79 @@ body.theme-funny-gold { --accent: #ffcc00; --bg: #1a0f2e; --card: #2d1b4d; --bor
     .app-shell { flex-direction: column; overflow-y: auto; height: auto; }
     .sidebar, .output-sidebar { width: 100%; min-width: 100%; border: none; }
 }
+/* --- 3D BLOCK PREVIEW --- */
+.cube {
+    width: 160px;
+    height: 160px;
+    position: relative;
+    transform-style: preserve-3d;
+    margin: 0 auto;
+    animation: rotateCube 15s infinite linear;
+}
+
+.face {
+    position: absolute;
+    width: 160px;
+    height: 160px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    image-rendering: pixelated;
+    background-color: #555;
+    background-size: 160px 160px;
+    background-position: 0 0;
+    background-repeat: no-repeat;
+}
+
+/* Face positioning (Assuming 160px width) */
+.front  { transform: translateZ(80px); }
+.back   { transform: rotateY(180deg) translateZ(80px); }
+.right  { transform: rotateY(90deg) translateZ(80px); }
+.left   { transform: rotateY(-90deg) translateZ(80px); }
+.top    { transform: rotateX(90deg) translateZ(80px); }
+.bottom { transform: rotateX(-90deg) translateZ(80px); }
+
+@keyframes rotateCube {
+    from { transform: rotateX(-20deg) rotateY(0deg); }
+    to   { transform: rotateX(-20deg) rotateY(360deg); }
+}
+/* Centering the 3D Stage */
+#blockPreviewContainer {
+    display: none; /* Controlled by JS */
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    min-height: 350px;
+    background: radial-gradient(circle, rgba(0,122,204,0.05) 0%, transparent 70%);
+}
+
+/* Fix the Toggle Bar layout */
+.preview-controls {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+/* Ensure the Item View stays tidy */
+#itemPreviewContainer {
+    display: inline-block;
+    transition: transform 0.3s ease;
+}
+/* Better multi-select styling */
+select[multiple] {
+    background: #121212;
+    border: 1px solid var(--border);
+    color: #aaa;
+    padding: 5px;
+    scrollbar-width: thin;
+}
+
+select[multiple] option {
+    padding: 4px 8px;
+    border-radius: 4px;
+    margin-bottom: 2px;
+}
+
+select[multiple] option:checked {
+    background: var(--accent) !important;
+    color: white;
+}
