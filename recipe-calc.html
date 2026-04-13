@@ -1,124 +1,138 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>Phoenix Suite — Recipe Calculator</title>
+  <meta charset="UTF-8">
+  <title>Phoenix Suite — Recipe Calculator</title>
   <link rel="icon" type="image/png" href="logo.jpg">
-<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;600;700&display=swap" rel="stylesheet">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<style>
-:root{
-  --bg:#0d0d0d;--surface:#141414;--card:#1a1a1a;--elevated:#202020;
-  --border:#2a2a2a;--border-hi:#383838;--accent:#007acc;--accent-dim:rgba(0,122,204,0.12);
-  --green:#4caf50;--orange:#ff9800;--red:#f44336;--yellow:#ffeb3b;--purple:#9b59b6;
-  --text:#d4d4d4;--text-dim:#6a6a6a;--text-bright:#f0f0f0;
-  --font:'JetBrains Mono',monospace;
-  --t-ULV:#888;--t-LV:#b5b5b5;--t-MV:#ffcc00;--t-HV:#ff8c00;
-  --t-EV:#9b59b6;--t-IV:#3498db;--t-LuV:#e91e63;--t-ZPM:#00bcd4;--t-UV:#ff5722;
-}
-*{box-sizing:border-box;margin:0;padding:0}
-body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:11px;height:100vh;display:flex;flex-direction:column;overflow:hidden}
-.topbar{background:var(--surface);border-bottom:1px solid var(--border);padding:8px 16px;display:flex;align-items:center;gap:12px;flex-shrink:0}
-.topbar-logo{color:var(--accent);font-size:13px;font-weight:700;letter-spacing:2px;text-decoration:none}
-.topbar-sep{color:var(--border-hi)}
-.topbar-title{color:var(--text-dim);font-size:10px;letter-spacing:1px}
-.topbar-right{margin-left:auto;display:flex;gap:8px;align-items:center}
-.topbar-back{color:var(--text-dim);font-size:10px;text-decoration:none;border:1px solid var(--border);padding:4px 10px;border-radius:4px;transition:all .15s}
-.topbar-back:hover{border-color:var(--accent);color:var(--accent)}
-.app{display:flex;flex:1;overflow:hidden}
-.sidebar{width:290px;min-width:290px;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden}
-.panel-center{flex:1;display:flex;flex-direction:column;overflow:hidden;background-image:radial-gradient(circle,#1a1a1a 1px,transparent 1px);background-size:30px 30px;min-width:0}
-.panel-right{width:350px;min-width:350px;background:var(--surface);border-left:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden}
-.panel-hdr{padding:8px 12px;background:#111;border-bottom:1px solid var(--border);font-size:9px;letter-spacing:1.5px;color:var(--accent);text-transform:uppercase;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
-.panel-body{flex:1;overflow-y:auto;padding:10px}
-::-webkit-scrollbar{width:4px}::-webkit-scrollbar-thumb{background:#2a2a2a;border-radius:10px}::-webkit-scrollbar-thumb:hover{background:var(--accent)}
-input,select,textarea{background:var(--elevated);color:var(--text-bright);border:1px solid var(--border);border-radius:4px;padding:6px 8px;font-family:var(--font);font-size:11px;width:100%;outline:none;transition:border-color .15s}
-input:focus,select:focus,textarea:focus{border-color:var(--accent)}
-textarea{resize:vertical;min-height:80px}
-.btn{background:var(--elevated);color:var(--text);border:1px solid var(--border);border-radius:4px;padding:6px 10px;font-family:var(--font);font-size:10px;cursor:pointer;transition:all .15s;white-space:nowrap}
-.btn:hover{border-color:var(--accent);color:var(--accent)}
-.btn-p{background:var(--accent);color:#fff;border-color:var(--accent)}
-.btn-p:hover{background:#0066b3;color:#fff}
-.btn-d{border-color:var(--red);color:var(--red)}.btn-d:hover{background:rgba(244,67,54,.1)}
-.btn-g{border-color:var(--green);color:var(--green)}.btn-g:hover{background:rgba(76,175,80,.1)}
-.btn-o{border-color:var(--orange);color:var(--orange)}.btn-o:hover{background:rgba(255,152,0,.1)}
-.btn-sm{padding:3px 7px;font-size:9px}
-.btn-full{width:100%;margin-bottom:5px;display:block;text-align:center;padding:7px}
-.sb-sec{padding:10px 12px;border-bottom:1px solid var(--border);flex-shrink:0}
-.sb-title{font-size:9px;letter-spacing:1.5px;color:var(--accent);text-transform:uppercase;margin-bottom:8px}
-.recipe-card{background:var(--card);border:1px solid var(--border);border-radius:6px;padding:8px 10px;margin-bottom:6px;cursor:pointer;transition:border-color .15s}
-.recipe-card:hover,.recipe-card.active{border-color:var(--accent)}
-.recipe-card.active{background:var(--accent-dim)}
-.r-name{font-size:11px;font-weight:600;color:var(--text-bright);margin-bottom:3px}
-.r-meta{font-size:9px;color:var(--text-dim);margin-bottom:5px}
-.chips{display:flex;gap:4px;flex-wrap:wrap}
-.chip{border-radius:3px;padding:2px 5px;font-size:9px;background:var(--elevated)}
-.chip-o{color:var(--green);border-left:2px solid var(--green)}
-.chip-i{color:var(--orange);border-left:2px solid var(--orange)}
-.chip-fi{color:var(--accent);border-left:2px solid var(--accent)}
-.chip-fo{color:var(--purple);border-left:2px solid var(--purple)}
-.tier{display:inline-block;padding:1px 5px;border-radius:3px;font-size:9px;font-weight:700;letter-spacing:1px}
-.tier-ULV{color:var(--t-ULV);border:1px solid var(--t-ULV)}.tier-LV{color:var(--t-LV);border:1px solid var(--t-LV)}
-.tier-MV{color:var(--t-MV);border:1px solid var(--t-MV)}.tier-HV{color:var(--t-HV);border:1px solid var(--t-HV)}
-.tier-EV{color:var(--t-EV);border:1px solid var(--t-EV)}.tier-IV{color:var(--t-IV);border:1px solid var(--t-IV)}
-.tier-LuV{color:var(--t-LuV);border:1px solid var(--t-LuV)}.tier-ZPM{color:var(--t-ZPM);border:1px solid var(--t-ZPM)}
-.tier-UV{color:var(--t-UV);border:1px solid var(--t-UV)}.tier-CUSTOM{color:#aaa;border:1px solid #aaa}
-.query-bar{padding:10px 12px;background:#111;border-bottom:1px solid var(--border);display:flex;gap:8px;align-items:flex-end;flex-shrink:0}
-.qf{flex:1}.qf label{display:block;font-size:9px;color:var(--text-dim);letter-spacing:1px;margin-bottom:3px}
-.oc-bar{padding:8px 12px;background:#0a1520;border-bottom:1px solid var(--border);display:flex;gap:10px;align-items:center;flex-shrink:0;flex-wrap:wrap}
-.oc-label{font-size:9px;color:var(--accent);letter-spacing:1px;white-space:nowrap}
-.oc-val{font-size:10px;color:var(--text-bright);min-width:30px;text-align:center}
-.result-section{margin-bottom:14px}
-.sec-title{font-size:9px;letter-spacing:1.5px;color:var(--text-dim);text-transform:uppercase;margin-bottom:6px;padding-bottom:4px;border-bottom:1px solid var(--border)}
-.chain-node{margin-bottom:3px}
-.chain-row{display:flex;align-items:center;gap:6px;padding:5px 8px;border-radius:4px;background:var(--card);border:1px solid var(--border);cursor:pointer;transition:border-color .15s}
-.chain-row:hover{border-color:var(--accent)}
-.chain-row.selected{border-color:var(--accent);background:var(--accent-dim)}
-.mat-table{width:100%;border-collapse:collapse}
-.mat-table th{font-size:9px;color:var(--text-dim);letter-spacing:1px;text-align:left;padding:3px 6px;border-bottom:1px solid var(--border)}
-.mat-table td{padding:5px 6px;border-bottom:1px solid #161616;font-size:11px}
-.machine-row{background:var(--card);border:1px solid var(--border);border-radius:6px;padding:8px 10px;margin-bottom:6px;display:flex;align-items:center;gap:10px}
-.eu-sum{background:var(--card);border:1px solid var(--border);border-radius:6px;padding:10px 12px;margin-bottom:10px}
-.empty{text-align:center;padding:40px 20px;color:var(--text-dim)}
-.empty-icon{font-size:28px;margin-bottom:10px;opacity:.3}
-.empty-text{font-size:10px;line-height:1.8}
-.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.88);display:none;align-items:center;justify-content:center;z-index:100}
-.modal-overlay.open{display:flex}
-.modal{background:var(--surface);border:1px solid var(--border-hi);border-radius:8px;width:640px;max-width:96vw;max-height:90vh;display:flex;flex-direction:column}
-.modal-hdr{padding:12px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;font-weight:600;color:var(--text-bright);flex-shrink:0}
-.modal-body{padding:14px 16px;overflow-y:auto;flex:1}
-.modal-ftr{padding:10px 16px;border-top:1px solid var(--border);display:flex;gap:8px;justify-content:flex-end;flex-shrink:0}
-.fl{display:block;font-size:9px;color:var(--text-dim);letter-spacing:1px;margin:8px 0 3px}
-.g2{display:grid;grid-template-columns:1fr 1fr;gap:6px}
-.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px}
-.g4{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:6px}
-.io-row{display:flex;gap:4px;align-items:center;margin-bottom:4px}
-.io-row input{margin:0}
-.tabs{display:flex;margin-bottom:12px;border-bottom:1px solid var(--border)}
-.tab{padding:6px 14px;font-size:10px;cursor:pointer;color:var(--text-dim);border-bottom:2px solid transparent;margin-bottom:-1px;transition:all .15s}
-.tab.active{color:var(--accent);border-bottom-color:var(--accent)}
-.notif{position:fixed;bottom:16px;right:16px;background:var(--card);border:1px solid var(--accent);border-radius:6px;padding:8px 14px;font-size:10px;color:var(--accent);z-index:200;opacity:0;transform:translateY(8px);transition:all .2s;pointer-events:none}
-.notif.show{opacity:1;transform:translateY(0)}
-.prog{display:none;margin-top:8px;background:var(--elevated);border-radius:4px;height:4px;overflow:hidden}
-.prog-bar{height:100%;background:var(--accent);width:0%;transition:width .1s}
-.kv-row{display:flex;gap:4px;margin-bottom:4px}
-.kv-row input{margin:0}
-/* EMI Window */
-.emi-win{background:#1e1e1e;border:2px solid #555;border-radius:4px;padding:8px;font-family:var(--font);font-size:10px;width:100%}
-.emi-title{background:#2a2a2a;border:1px solid #444;padding:3px 8px;font-size:10px;color:#ccc;margin-bottom:8px;border-radius:2px}
-.emi-slots{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:8px}
-.emi-group{display:flex;flex-direction:column;gap:3px}
-.emi-group-label{font-size:8px;color:#6a6a6a;letter-spacing:1px;text-transform:uppercase;margin-bottom:2px}
-.emi-slot{width:36px;height:36px;background:#2d2d2d;border:1px solid #444;border-radius:3px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:9px;color:#ccc;position:relative;cursor:default}
-.emi-slot:hover{border-color:#007acc}
-.emi-slot .qty{position:absolute;bottom:1px;right:2px;font-size:8px;color:#ffeb3b;font-weight:700;text-shadow:0 0 3px #000}
-.emi-slot .icon{font-size:14px;line-height:1}
-.emi-arrow{color:#555;font-size:18px;margin:0 4px;align-self:center}
-.emi-info{display:flex;gap:12px;font-size:9px;color:#888;border-top:1px solid #2a2a2a;padding-top:6px;flex-wrap:wrap}
-.emi-info span{color:var(--accent)}
-.emi-fluid{background:#1a2a3a;border-color:#0a5080}
-.emi-chanced{border-color:#9b59b6;background:#1a1a2a}
-</style>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="gtceu_data.js"></script>
+  <script src="phoenix_engine.js"></script>
+  <style>
+    :root{
+      --bg:#0d0d0d;--surface:#141414;--card:#1a1a1a;--elevated:#202020;
+      --border:#2a2a2a;--border-hi:#383838;--accent:#007acc;--accent-dim:rgba(0,122,204,0.12);
+      --green:#4caf50;--orange:#ff9800;--red:#f44336;--yellow:#ffeb3b;--purple:#9b59b6;
+      --text:#d4d4d4;--text-dim:#6a6a6a;--text-bright:#f0f0f0;
+      --font:'JetBrains Mono',monospace;
+      --t-ULV:#888;--t-LV:#b5b5b5;--t-MV:#ffcc00;--t-HV:#ff8c00;
+      --t-EV:#9b59b6;--t-IV:#3498db;--t-LuV:#e91e63;--t-ZPM:#00bcd4;--t-UV:#ff5722;
+    }
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:11px;height:100vh;display:flex;flex-direction:column;overflow:hidden}
+    .topbar{background:var(--surface);border-bottom:1px solid var(--border);padding:8px 16px;display:flex;align-items:center;gap:12px;flex-shrink:0}
+    .topbar-logo{color:var(--accent);font-size:13px;font-weight:700;letter-spacing:2px;text-decoration:none}
+    .topbar-sep{color:var(--border-hi)}
+    .topbar-title{color:var(--text-dim);font-size:10px;letter-spacing:1px}
+    .topbar-right{margin-left:auto;display:flex;gap:8px;align-items:center}
+    .topbar-back{color:var(--text-dim);font-size:10px;text-decoration:none;border:1px solid var(--border);padding:4px 10px;border-radius:4px;transition:all .15s}
+    .topbar-back:hover{border-color:var(--accent);color:var(--accent)}
+    .app{display:flex;flex:1;overflow:hidden}
+    .sidebar{width:290px;min-width:290px;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden}
+    .panel-center{flex:1;display:flex;flex-direction:column;overflow:hidden;background-image:radial-gradient(circle,#1a1a1a 1px,transparent 1px);background-size:30px 30px;min-width:0}
+    .panel-right{width:350px;min-width:350px;background:var(--surface);border-left:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden}
+    .panel-hdr{padding:8px 12px;background:#111;border-bottom:1px solid var(--border);font-size:9px;letter-spacing:1.5px;color:var(--accent);text-transform:uppercase;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+    .panel-body{flex:1;overflow-y:auto;padding:10px}
+    ::-webkit-scrollbar{width:4px}::-webkit-scrollbar-thumb{background:#2a2a2a;border-radius:10px}::-webkit-scrollbar-thumb:hover{background:var(--accent)}
+    input,select,textarea{background:var(--elevated);color:var(--text-bright);border:1px solid var(--border);border-radius:4px;padding:6px 8px;font-family:var(--font);font-size:11px;width:100%;outline:none;transition:border-color .15s}
+    input:focus,select:focus,textarea:focus{border-color:var(--accent)}
+    textarea{resize:vertical;min-height:80px}
+    .btn{background:var(--elevated);color:var(--text);border:1px solid var(--border);border-radius:4px;padding:6px 10px;font-family:var(--font);font-size:10px;cursor:pointer;transition:all .15s;white-space:nowrap}
+    .btn:hover{border-color:var(--accent);color:var(--accent)}
+    .btn-p{background:var(--accent);color:#fff;border-color:var(--accent)}
+    .btn-p:hover{background:#0066b3;color:#fff}
+    .btn-d{border-color:var(--red);color:var(--red)}.btn-d:hover{background:rgba(244,67,54,.1)}
+    .btn-g{border-color:var(--green);color:var(--green)}.btn-g:hover{background:rgba(76,175,80,.1)}
+    .btn-o{border-color:var(--orange);color:var(--orange)}.btn-o:hover{background:rgba(255,152,0,.1)}
+    .btn-sm{padding:3px 7px;font-size:9px}
+    .btn-full{width:100%;margin-bottom:5px;display:block;text-align:center;padding:7px}
+    .sb-sec{padding:10px 12px;border-bottom:1px solid var(--border);flex-shrink:0}
+    .sb-title{font-size:9px;letter-spacing:1.5px;color:var(--accent);text-transform:uppercase;margin-bottom:8px}
+    .recipe-card{background:var(--card);border:1px solid var(--border);border-radius:6px;padding:8px 10px;margin-bottom:6px;cursor:pointer;transition:border-color .15s}
+    .recipe-card:hover,.recipe-card.active{border-color:var(--accent)}
+    .recipe-card.active{background:var(--accent-dim)}
+    .r-name{font-size:11px;font-weight:600;color:var(--text-bright);margin-bottom:3px}
+    .r-meta{font-size:9px;color:var(--text-dim);margin-bottom:5px}
+    .chips{display:flex;gap:4px;flex-wrap:wrap}
+    .chip{border-radius:3px;padding:2px 5px;font-size:9px;background:var(--elevated)}
+    .chip-o{color:var(--green);border-left:2px solid var(--green)}
+    .chip-i{color:var(--orange);border-left:2px solid var(--orange)}
+    .chip-fi{color:var(--accent);border-left:2px solid var(--accent)}
+    .chip-fo{color:var(--purple);border-left:2px solid var(--purple)}
+    .tier{display:inline-block;padding:1px 5px;border-radius:3px;font-size:9px;font-weight:700;letter-spacing:1px}
+    .tier-ULV{color:var(--t-ULV);border:1px solid var(--t-ULV)}.tier-LV{color:var(--t-LV);border:1px solid var(--t-LV)}
+    .tier-MV{color:var(--t-MV);border:1px solid var(--t-MV)}.tier-HV{color:var(--t-HV);border:1px solid var(--t-HV)}
+    .tier-EV{color:var(--t-EV);border:1px solid var(--t-EV)}.tier-IV{color:var(--t-IV);border:1px solid var(--t-IV)}
+    .tier-LuV{color:var(--t-LuV);border:1px solid var(--t-LuV)}.tier-ZPM{color:var(--t-ZPM);border:1px solid var(--t-ZPM)}
+    .tier-UV{color:var(--t-UV);border:1px solid var(--t-UV)}.tier-CUSTOM{color:#aaa;border:1px solid #aaa}
+    .query-bar{padding:10px 12px;background:#111;border-bottom:1px solid var(--border);display:flex;gap:8px;align-items:flex-end;flex-shrink:0}
+    .qf{flex:1}.qf label{display:block;font-size:9px;color:var(--text-dim);letter-spacing:1px;margin-bottom:3px}
+    .oc-bar{padding:8px 12px;background:#0a1520;border-bottom:1px solid var(--border);display:flex;gap:10px;align-items:center;flex-shrink:0;flex-wrap:wrap}
+    .oc-label{font-size:9px;color:var(--accent);letter-spacing:1px;white-space:nowrap}
+    .oc-val{font-size:10px;color:var(--text-bright);min-width:30px;text-align:center}
+    .result-section{margin-bottom:14px}
+    .sec-title{font-size:9px;letter-spacing:1.5px;color:var(--text-dim);text-transform:uppercase;margin-bottom:6px;padding-bottom:4px;border-bottom:1px solid var(--border)}
+    .chain-node{margin-bottom:3px}
+    .chain-row{display:flex;align-items:center;gap:6px;padding:5px 8px;border-radius:4px;background:var(--card);border:1px solid var(--border);cursor:pointer;transition:border-color .15s}
+    .chain-row:hover{border-color:var(--accent)}
+    .chain-row.selected{border-color:var(--accent);background:var(--accent-dim)}
+    .mat-table{width:100%;border-collapse:collapse}
+    .mat-table th{font-size:9px;color:var(--text-dim);letter-spacing:1px;text-align:left;padding:3px 6px;border-bottom:1px solid var(--border)}
+    .mat-table td{padding:5px 6px;border-bottom:1px solid #161616;font-size:11px}
+    .machine-row{background:var(--card);border:1px solid var(--border);border-radius:6px;padding:8px 10px;margin-bottom:6px;display:flex;align-items:center;gap:10px}
+    .eu-sum{background:var(--card);border:1px solid var(--border);border-radius:6px;padding:10px 12px;margin-bottom:10px}
+    .empty{text-align:center;padding:40px 20px;color:var(--text-dim)}
+    .empty-icon{font-size:28px;margin-bottom:10px;opacity:.3}
+    .empty-text{font-size:10px;line-height:1.8}
+    .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.88);display:none;align-items:center;justify-content:center;z-index:100}
+    .modal-overlay.open{display:flex}
+    .modal{background:var(--surface);border:1px solid var(--border-hi);border-radius:8px;width:640px;max-width:96vw;max-height:90vh;display:flex;flex-direction:column}
+    .modal-hdr{padding:12px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;font-weight:600;color:var(--text-bright);flex-shrink:0}
+    .modal-body{padding:14px 16px;overflow-y:auto;flex:1}
+    .modal-ftr{padding:10px 16px;border-top:1px solid var(--border);display:flex;gap:8px;justify-content:flex-end;flex-shrink:0}
+    .fl{display:block;font-size:9px;color:var(--text-dim);letter-spacing:1px;margin:8px 0 3px}
+    .g2{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+    .g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px}
+    .g4{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:6px}
+    .io-row{display:flex;gap:4px;align-items:center;margin-bottom:4px}
+    .io-row input{margin:0}
+    .tabs{display:flex;margin-bottom:12px;border-bottom:1px solid var(--border)}
+    .tab{padding:6px 14px;font-size:10px;cursor:pointer;color:var(--text-dim);border-bottom:2px solid transparent;margin-bottom:-1px;transition:all .15s}
+    .tab.active{color:var(--accent);border-bottom-color:var(--accent)}
+    .chain-row.passive-node{border-color:var(--purple);background:rgba(155,89,182,0.08)}
+    .chain-row.passive-node:hover{border-color:var(--purple)}
+    .notif.show{opacity:1;transform:translateY(0)}
+    .prog{display:none;margin-top:8px;background:var(--elevated);border-radius:4px;height:4px;overflow:hidden}
+    .prog-bar{height:100%;background:var(--accent);width:0%;transition:width .1s}
+    .kv-row{display:flex;gap:4px;margin-bottom:4px}
+    .kv-row input{margin:0}
+    /* EMI Window */
+    .emi-wrap{background:#c6c6c6;border:3px solid #555;font-family:'Courier New',monospace;font-size:11px;max-width:360px;margin:0 auto}
+    .emi-topbar{background:#c6c6c6;border-bottom:2px solid #555;padding:2px 4px;display:flex;align-items:center;gap:2px}
+    .emi-machine-name{background:#c6c6c6;flex:1;text-align:center;font-size:11px;font-weight:bold;color:#222;padding:2px 4px;letter-spacing:.3px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .emi-pagebar{background:#c6c6c6;border-bottom:1px solid #888;padding:1px 6px;display:flex;align-items:center;justify-content:space-between;font-size:10px;color:#333}
+    .emi-nav-btn{background:#a0a0a0;border:1px solid #666;padding:0 5px;cursor:pointer;font-size:10px;color:#111;line-height:16px;min-width:18px;text-align:center}
+    .emi-nav-btn:disabled{opacity:.35;cursor:default}
+    .emi-nav-btn:not(:disabled):hover{background:#909090}
+    .emi-body{background:#fff;border:1px solid #aaa;margin:4px;padding:5px;display:flex;align-items:center;gap:3px;flex-wrap:nowrap;justify-content:center;min-height:74px}
+    .emi-slot-grid{display:inline-flex;flex-direction:column;gap:1px}
+    .emi-slot-row{display:flex;gap:1px}
+    .emi-slot{width:34px;height:34px;background:#c8c8c8;border-top:2px solid #fff;border-left:2px solid #fff;border-right:2px solid #555;border-bottom:2px solid #555;display:flex;align-items:center;justify-content:center;position:relative;cursor:pointer;overflow:hidden}
+    .emi-slot:hover{outline:2px solid #007acc;outline-offset:-1px}
+    .emi-slot.empty-slot{background:#8b8b8b;border-top-color:#aaa;border-left-color:#aaa;border-right-color:#444;border-bottom-color:#444;cursor:default}
+    .emi-slot.fluid-slot{background:#0a2040;border-top-color:#1a4080;border-left-color:#1a4080;border-right-color:#040f20;border-bottom-color:#040f20}
+    .emi-slot.chanced-slot{background:#1a0a2a;border-top-color:#3a1a5a;border-left-color:#3a1a5a;border-right-color:#0a0015;border-bottom-color:#0a0015}
+    .emi-slot.nc-slot{background:#b0b030;border-top-color:#d0d050;border-left-color:#d0d050;border-right-color:#606010;border-bottom-color:#606010}
+    .emi-slot-abbr{font-family:'Courier New',monospace;font-size:9px;font-weight:700;color:#fff;text-shadow:1px 1px 0 #000,-1px 1px 0 #000,1px -1px 0 #000,-1px -1px 0 #000;text-align:center;line-height:1.1;word-break:break-all;padding:1px;z-index:1}
+    .emi-slot-abbr.dark{color:#222;text-shadow:none}
+    .emi-slot-qty{position:absolute;bottom:1px;right:2px;font-family:'Courier New',monospace;font-size:8px;font-weight:700;color:#fff;text-shadow:1px 1px 0 #000,-1px 1px 0 #000;line-height:1;z-index:2}
+    .emi-slot-chance{position:absolute;top:1px;left:1px;font-family:'Courier New',monospace;font-size:7px;font-weight:700;color:#ff88ff;text-shadow:1px 1px 0 #000;line-height:1;z-index:2}
+    .emi-slot-mb{position:absolute;bottom:1px;right:1px;font-family:'Courier New',monospace;font-size:7px;color:#88ccff;text-shadow:1px 1px 0 #000;line-height:1;z-index:2}
+    .emi-arrow-wrap{color:#555;font-size:20px;flex-shrink:0;margin:0 2px;align-self:center;display:flex;align-items:center}
+    .emi-info-bar{background:#c6c6c6;border-top:1px solid #888;padding:3px 6px;font-size:10px;color:#222;line-height:1.7;font-family:'Courier New',monospace}
+    .emi-info-bar b{color:#111}
+    .emi-tier-pill{display:inline;font-size:10px;font-weight:700;padding:0 3px;border:1px solid currentColor;border-radius:1px}
+  </style>
 </head>
 <body>
 
@@ -168,7 +182,14 @@ textarea{resize:vertical;min-height:80px}
         <input type="text" id="targetItem" placeholder="e.g. copper_ingot" list="itemSugs">
         <datalist id="itemSugs"></datalist>
       </div>
-      <div class="qf" style="width:90px;flex:none">
+      <div id="calcModeWrap" style="display:flex;flex-direction:column;gap:3px;flex-shrink:0">
+        <label style="font-size:9px;color:var(--text-dim);letter-spacing:1px">MODE</label>
+        <div style="display:flex;border:1px solid var(--border);border-radius:4px;overflow:hidden">
+          <button id="modeRateBtn" class="btn btn-p btn-sm" style="border-radius:0;border:none;padding:5px 8px" onclick="setCalcMode('rate')">RATE</button>
+          <button id="modeOnceBtn" class="btn btn-sm" style="border-radius:0;border:none;padding:5px 8px;border-left:1px solid var(--border)" onclick="setCalcMode('once')">ONCE</button>
+        </div>
+      </div>
+      <div id="rateInputs" class="qf" style="width:90px;flex:none">
         <label>QTY / SEC</label>
         <input type="number" id="targetQty" value="1" min="0.01" step="0.5">
       </div>
@@ -186,9 +207,9 @@ textarea{resize:vertical;min-height:80px}
         <option>LuV</option><option>ZPM</option><option>UV</option>
       </select>
       <label style="font-size:9px;color:var(--text-dim)">OC Type</label>
-      <select id="ocType" style="width:90px;margin:0;padding:3px 4px;font-size:10px" onchange="updateOCPreview()">
-        <option value="normal">Normal (2× EUt, ½ dur)</option>
-        <option value="perfect">Perfect (4× EUt, ½ dur)</option>
+      <select id="ocType" style="width:110px;margin:0;padding:3px 4px;font-size:10px" onchange="updateOCPreview()">
+        <option value="normal">Imperfect (4× EUt, ½ dur)</option>
+        <option value="perfect">Perfect (4× EUt, ¼ dur)</option>
       </select>
       <span id="ocPreview" style="font-size:9px;color:var(--text-dim);margin-left:auto"></span>
     </div>
@@ -217,17 +238,12 @@ textarea{resize:vertical;min-height:80px}
 
 <!-- EMI MODAL -->
 <div class="modal-overlay" id="emiModal">
-  <div class="modal" style="width:480px">
-    <div class="modal-hdr">
-      <span id="emiTitle">EMI Recipe View</span>
-      <button class="btn btn-sm" onclick="closeEMI()">✕</button>
+  <div style="background:#888;border:3px solid #333;width:400px;max-width:96vw">
+    <div style="background:#666;border-bottom:2px solid #333;padding:4px 10px;display:flex;align-items:center;justify-content:space-between">
+      <span style="font-family:'Courier New',monospace;font-size:11px;color:#fff;font-weight:bold">EMI - Recipe Viewer</span>
+      <button onclick="closeEMI()" style="background:#555;border:1px solid #333;color:#fff;font-size:11px;cursor:pointer;padding:1px 8px;font-family:monospace">X</button>
     </div>
-    <div class="modal-body" id="emiBody"></div>
-    <div class="modal-ftr">
-      <button class="btn btn-sm" id="emiPrev" onclick="emiNav(-1)">◀ Prev</button>
-      <span id="emiPage" style="font-size:10px;color:var(--text-dim);align-self:center"></span>
-      <button class="btn btn-sm" id="emiNext" onclick="emiNav(1)">Next ▶</button>
-    </div>
+    <div style="padding:6px" id="emiBody"></div>
   </div>
 </div>
 
@@ -332,6 +348,7 @@ textarea{resize:vertical;min-height:80px}
         <div class="tab" onclick="switchTab('java',this)">Java</div>
         <div class="tab" onclick="switchTab('github',this)">GitHub</div>
         <div class="tab" onclick="switchTab('json',this)">JSON</div>
+        <div class="tab" onclick="switchTab('matgen',this)" style="color:var(--accent)">&#9879; Material Gen</div>
       </div>
 
       <div id="tabKjs">
@@ -391,1001 +408,115 @@ textarea{resize:vertical;min-height:80px}
           <span id="jsonStatus" style="font-size:10px;color:var(--text-dim)"></span>
         </div>
       </div>
+
+      <!-- MATERIAL GENERATOR TAB -->
+      <div id="tabMatgen" style="display:none">
+        <p style="color:var(--text-dim);font-size:10px;line-height:1.7;margin-bottom:10px">
+          Simulate GTCEu's <code style="color:var(--accent)">MaterialRecipeHandler</code> to generate all programmatic material recipes.
+          Fill in the material's properties and flags — the generator produces EBF, Vacuum Freezer, Compressor, Bender, Extruder, Alloy Smelter, Fluid Solidifier, Autoclave, and more.
+        </p>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:6px">
+          <div><label class="fl">MATERIAL ID</label><input type="text" id="matId" placeholder="e.g. aluminfrost"></div>
+          <div><label class="fl">DISPLAY NAME</label><input type="text" id="matName" placeholder="e.g. Aluminfrost"></div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-bottom:6px">
+          <div><label class="fl">MASS (approx atomic weight)</label><input type="number" id="matMass" placeholder="e.g. 56 for iron" min="1" value="100"></div>
+          <div><label class="fl">BLAST TEMP (K, 0 = none)</label><input type="number" id="matBlast" placeholder="0" min="0" value="0"></div>
+          <div><label class="fl">EBF EUt (0 = auto MV)</label><input type="number" id="matEut" placeholder="0 = VA[MV]" min="0" value="0"></div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:6px">
+          <div>
+            <label class="fl">GAS TIER (for EBF gas boost)</label>
+            <select id="matGas">
+              <option value="none">None</option>
+              <option value="low">LOW (Nitrogen 1000mB)</option>
+              <option value="mid">MID (Helium 1000mB)</option>
+              <option value="high">HIGH (Argon 1000mB)</option>
+              <option value="higher">HIGHER</option>
+              <option value="highest">HIGHEST</option>
+            </select>
+          </div>
+          <div>
+            <label class="fl">NAMESPACE</label>
+            <input type="text" id="matNs" placeholder="gtceu" value="gtceu">
+          </div>
+        </div>
+
+        <label class="fl" style="color:var(--accent)">PROPERTIES</label>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:5px;margin-bottom:8px">
+          <label style="display:flex;align-items:center;gap:6px;padding:5px;background:rgba(255,255,255,.03);border-radius:4px;cursor:pointer"><input type="checkbox" id="pIngot" checked> <span>ingot</span></label>
+          <label style="display:flex;align-items:center;gap:6px;padding:5px;background:rgba(255,255,255,.03);border-radius:4px;cursor:pointer"><input type="checkbox" id="pDust" checked> <span>dust</span></label>
+          <label style="display:flex;align-items:center;gap:6px;padding:5px;background:rgba(255,255,255,.03);border-radius:4px;cursor:pointer"><input type="checkbox" id="pGem"> <span>gem</span></label>
+          <label style="display:flex;align-items:center;gap:6px;padding:5px;background:rgba(255,255,255,.03);border-radius:4px;cursor:pointer"><input type="checkbox" id="pFluid"> <span>fluid</span></label>
+          <label style="display:flex;align-items:center;gap:6px;padding:5px;background:rgba(255,255,255,.03);border-radius:4px;cursor:pointer"><input type="checkbox" id="pHotIngot"> <span>hot ingot (vac freeze)</span></label>
+          <label style="display:flex;align-items:center;gap:6px;padding:5px;background:rgba(255,255,255,.03);border-radius:4px;cursor:pointer"><input type="checkbox" id="pCrystal"> <span>crystallizable</span></label>
+        </div>
+
+        <label class="fl" style="color:var(--accent)">FLAGS — Tag Prefixes to Generate</label>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:4px;margin-bottom:8px;font-size:10px">
+          <label style="display:flex;align-items:center;gap:5px;padding:4px 6px;background:rgba(255,255,255,.03);border-radius:4px;cursor:pointer"><input type="checkbox" id="fPlate" onchange="updateMatPreview()"> <span>plate</span></label>
+          <label style="display:flex;align-items:center;gap:5px;padding:4px 6px;background:rgba(255,255,255,.03);border-radius:4px;cursor:pointer"><input type="checkbox" id="fDoublePlate" onchange="updateMatPreview()"> <span>plate_double</span></label>
+          <label style="display:flex;align-items:center;gap:5px;padding:4px 6px;background:rgba(255,255,255,.03);border-radius:4px;cursor:pointer"><input type="checkbox" id="fDensePlate" onchange="updateMatPreview()"> <span>plate_dense</span></label>
+          <label style="display:flex;align-items:center;gap:5px;padding:4px 6px;background:rgba(255,255,255,.03);border-radius:4px;cursor:pointer"><input type="checkbox" id="fRod" onchange="updateMatPreview()"> <span>rod</span></label>
+          <label style="display:flex;align-items:center;gap:5px;padding:4px 6px;background:rgba(255,255,255,.03);border-radius:4px;cursor:pointer"><input type="checkbox" id="fLongRod" onchange="updateMatPreview()"> <span>rod_long</span></label>
+          <label style="display:flex;align-items:center;gap:5px;padding:4px 6px;background:rgba(255,255,255,.03);border-radius:4px;cursor:pointer"><input type="checkbox" id="fGear" onchange="updateMatPreview()"> <span>gear</span></label>
+          <label style="display:flex;align-items:center;gap:5px;padding:4px 6px;background:rgba(255,255,255,.03);border-radius:4px;cursor:pointer"><input type="checkbox" id="fGearSmall" onchange="updateMatPreview()"> <span>gear_small</span></label>
+          <label style="display:flex;align-items:center;gap:5px;padding:4px 6px;background:rgba(255,255,255,.03);border-radius:4px;cursor:pointer"><input type="checkbox" id="fFoil" onchange="updateMatPreview()"> <span>foil</span></label>
+          <label style="display:flex;align-items:center;gap:5px;padding:4px 6px;background:rgba(255,255,255,.03);border-radius:4px;cursor:pointer"><input type="checkbox" id="fRing" onchange="updateMatPreview()"> <span>ring</span></label>
+          <label style="display:flex;align-items:center;gap:5px;padding:4px 6px;background:rgba(255,255,255,.03);border-radius:4px;cursor:pointer"><input type="checkbox" id="fBolt" onchange="updateMatPreview()"> <span>bolt</span></label>
+          <label style="display:flex;align-items:center;gap:5px;padding:4px 6px;background:rgba(255,255,255,.03);border-radius:4px;cursor:pointer"><input type="checkbox" id="fScrew" onchange="updateMatPreview()"> <span>screw</span></label>
+          <label style="display:flex;align-items:center;gap:5px;padding:4px 6px;background:rgba(255,255,255,.03);border-radius:4px;cursor:pointer"><input type="checkbox" id="fRotor" onchange="updateMatPreview()"> <span>rotor</span></label>
+          <label style="display:flex;align-items:center;gap:5px;padding:4px 6px;background:rgba(255,255,255,.03);border-radius:4px;cursor:pointer"><input type="checkbox" id="fRound" onchange="updateMatPreview()"> <span>round</span></label>
+          <label style="display:flex;align-items:center;gap:5px;padding:4px 6px;background:rgba(255,255,255,.03);border-radius:4px;cursor:pointer"><input type="checkbox" id="fSpring" onchange="updateMatPreview()"> <span>spring</span></label>
+          <label style="display:flex;align-items:center;gap:5px;padding:4px 6px;background:rgba(255,255,255,.03);border-radius:4px;cursor:pointer"><input type="checkbox" id="fSpringSmall" onchange="updateMatPreview()"> <span>spring_small</span></label>
+          <label style="display:flex;align-items:center;gap:5px;padding:4px 6px;background:rgba(255,255,255,.03);border-radius:4px;cursor:pointer"><input type="checkbox" id="fWireFine" onchange="updateMatPreview()"> <span>wire_fine</span></label>
+          <label style="display:flex;align-items:center;gap:5px;padding:4px 6px;background:rgba(255,255,255,.03);border-radius:4px;cursor:pointer"><input type="checkbox" id="fFrame" onchange="updateMatPreview()"> <span>frameGt</span></label>
+        </div>
+        <label class="fl" style="color:var(--accent)">BEHAVIOUR FLAGS</label>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:4px;margin-bottom:8px;font-size:10px">
+          <label style="display:flex;align-items:center;gap:5px;padding:4px 6px;background:rgba(255,255,255,.03);border-radius:4px;cursor:pointer"><input type="checkbox" id="fNoSmashing" onchange="updateMatPreview()"> <span>NO_SMASHING</span></label>
+          <label style="display:flex;align-items:center;gap:5px;padding:4px 6px;background:rgba(255,255,255,.03);border-radius:4px;cursor:pointer"><input type="checkbox" id="fNoSmelting" onchange="updateMatPreview()"> <span>NO_SMELTING</span></label>
+          <label style="display:flex;align-items:center;gap:5px;padding:4px 6px;background:rgba(255,255,255,.03);border-radius:4px;cursor:pointer"><input type="checkbox" id="fExplosive" onchange="updateMatPreview()"> <span>EXPLOSIVE</span></label>
+          <label style="display:flex;align-items:center;gap:5px;padding:4px 6px;background:rgba(255,255,255,.03);border-radius:4px;cursor:pointer"><input type="checkbox" id="fFlammable" onchange="updateMatPreview()"> <span>FLAMMABLE</span></label>
+          <label style="display:flex;align-items:center;gap:5px;padding:4px 6px;background:rgba(255,255,255,.03);border-radius:4px;cursor:pointer"><input type="checkbox" id="fMagnetic" onchange="updateMatPreview()"> <span>IS_MAGNETIC</span></label>
+          <label style="display:flex;align-items:center;gap:5px;padding:4px 6px;background:rgba(255,255,255,.03);border-radius:4px;cursor:pointer"><input type="checkbox" id="fMortar" onchange="updateMatPreview()"> <span>MORTAR_GRINDABLE</span></label>
+        </div>
+
+        <div id="matPreview" style="font-size:9px;color:var(--text-dim);margin-bottom:8px;padding:6px;background:var(--card);border-radius:4px;border:1px solid var(--border)">Preview: fill in fields above then click Generate.</div>
+
+        <div style="display:flex;gap:8px;align-items:center">
+          <button class="btn btn-p" onclick="generateMaterialRecipes()">&#9879; Generate &amp; Import Recipes</button>
+          <span id="matGenStatus" style="font-size:10px;color:var(--text-dim)"></span>
+        </div>
+      </div>
+
     </div>
   </div>
 </div>
 
-<div class="notif" id="notif"></div>
-
 <script>
-// ═══════════════════════════════════════════════
-// DATA & CONSTANTS
-// ═══════════════════════════════════════════════
-let recipes = [];
-let editingId = null;
-let customMachines = [];
-let emiRecipes = [];
-let emiIdx = 0;
-
-const TIER_EUT = {ULV:8,LV:32,MV:128,HV:512,EV:2048,IV:8192,LuV:32768,ZPM:131072,UV:524288};
-const TIER_ORDER = ['ULV','LV','MV','HV','EV','IV','LuV','ZPM','UV'];
-
-const BUILTIN_MACHINES = [
-  'Electric Blast Furnace','Alloy Smelter','Alloy Blast Smelter','Assembly Line',
-  'Assembler','Chemical Reactor','Large Chemical Reactor','Electrolyzer','Centrifuge',
-  'Macerator','Ore Washer','Thermal Centrifuge','Circuit Assembler','Autoclave',
-  'Compressor','Extractor','Extruder','Fluid Solidifier','Forming Press','Lathe',
-  'Wire Mill','Polarizer','Bender','Cutter','Electromagnetic Separator','Sifter',
-  'Mixer','Distillery','Distillation Tower','Pyrolyse Oven','Vacuum Freezer',
-  'Fusion Reactor','Implosion Compressor','Scanner','Forge Hammer','Ember Igniter',
-  'Earth Sieve','Water Source','Confectionery Fabricator','Source Imbuement',
-  'Source Extraction','Source Reactor','Bio Aetheric Engine','Comb Decanter',
-  'Apis Progenitor','Honey Chamber','Phoenixware Fusion MK1','Custom / Other'
-];
-
-const JAVA_MAP = {
-  ASSEMBLER_RECIPES:'Assembler',ASSEMBLY_LINE_RECIPES:'Assembly Line',
-  BLAST_RECIPES:'Electric Blast Furnace',EBF_RECIPES:'Electric Blast Furnace',
-  ELECTRIC_BLAST_FURNACE_RECIPES:'Electric Blast Furnace',
-  CENTRIFUGE_RECIPES:'Centrifuge',CHEMICAL_RECIPES:'Chemical Reactor',
-  LARGE_CHEMICAL_RECIPES:'Large Chemical Reactor',
-  CIRCUIT_ASSEMBLER_RECIPES:'Circuit Assembler',COMPRESSOR_RECIPES:'Compressor',
-  DISTILLATION_RECIPES:'Distillation Tower',ELECTROLYZER_RECIPES:'Electrolyzer',
-  EXTRACTOR_RECIPES:'Extractor',FLUID_SOLIDIFICATION_RECIPES:'Fluid Solidifier',
-  FORMING_PRESS_RECIPES:'Forming Press',IMPLOSION_RECIPES:'Implosion Compressor',
-  LATHE_RECIPES:'Lathe',MACERATOR_RECIPES:'Macerator',MIXER_RECIPES:'Mixer',
-  SCANNER_RECIPES:'Scanner',SIFTER_RECIPES:'Sifter',
-  VACUUM_FREEZER_RECIPES:'Vacuum Freezer',WIREMILL_RECIPES:'Wire Mill',
-  ALLOY_BLAST_SMELTER_RECIPES:'Alloy Blast Smelter',
-  APIS_PROGENITOR_RECIPES:'Apis Progenitor',SOURCE_REACTOR_RECIPES:'Source Reactor',
-  BIO_ENGINE_RECIPES:'Bio Aetheric Engine',HONEY_CHAMBER_RECIPES:'Honey Chamber',
-  SOURCE_IMBUEMENT_RECIPES:'Source Imbuement',SOURCE_EXTRACTION_RECIPES:'Source Extraction',
-  COMB_DECANTING_RECIPES:'Comb Decanter',
-};
-
-// ═══════════════════════════════════════════════
-// INIT
-// ═══════════════════════════════════════════════
-(function init(){
-  try{ const s=localStorage.getItem('pcR'); if(s) recipes=JSON.parse(s); }catch(e){}
-  try{ const s=localStorage.getItem('pcCM'); if(s) customMachines=JSON.parse(s); }catch(e){}
-  populateMSel();
-  renderCMList();
-  renderList();
-  updateOCPreview();
-})();
-
-function dbSave(){ localStorage.setItem('pcR',JSON.stringify(recipes)); }
-function cmSave(){ localStorage.setItem('pcCM',JSON.stringify(customMachines)); }
-function allMachines(){ return [...BUILTIN_MACHINES,...customMachines]; }
-
-function populateMSel(){
-  const s=document.getElementById('rMachine');
-  const prev=s.value;
-  s.innerHTML=allMachines().map(m=>`<option value="${m}">${m}</option>`).join('');
-  if(prev) s.value=prev;
-}
-
-// ═══════════════════════════════════════════════
-// CUSTOM MACHINES
-// ═══════════════════════════════════════════════
-function addCM(){
-  const v=document.getElementById('cmInput').value.trim();
-  if(!v||customMachines.includes(v)||BUILTIN_MACHINES.includes(v)){notify('Already exists or empty.');return;}
-  customMachines.push(v); cmSave(); populateMSel(); renderCMList();
-  document.getElementById('cmInput').value='';
-  notify('Machine added: '+v);
-}
-function removeCM(name){
-  customMachines=customMachines.filter(m=>m!==name); cmSave(); populateMSel(); renderCMList();
-}
-function renderCMList(){
-  const el=document.getElementById('cmList');
-  if(!customMachines.length){el.innerHTML='<span style="font-size:9px">None added.</span>';return;}
-  el.innerHTML=customMachines.map(m=>`<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:2px"><span>${m}</span><button class="btn btn-sm btn-d" style="padding:1px 5px;font-size:8px" onclick="removeCM('${m.replace(/'/g,"\\'")}')">×</button></div>`).join('');
-}
-
-// ═══════════════════════════════════════════════
-// OVERCLOCK ENGINE
-// ═══════════════════════════════════════════════
-function ocCalc(recipe, machineTierName, ocType){
-  if(!machineTierName||machineTierName==='0') return {eut:recipe.eut||0, duration:recipe.duration||200, ocLevels:0};
-  const recipeTier = eutToTier(recipe.eut||0);
-  const recipeIdx  = TIER_ORDER.indexOf(recipeTier);
-  const machineIdx = TIER_ORDER.indexOf(machineTierName);
-  if(machineIdx<=recipeIdx) return {eut:recipe.eut||0, duration:recipe.duration||200, ocLevels:0};
-
-  const levels = machineIdx - recipeIdx;
-  let eut = recipe.eut||0;
-  let dur = recipe.duration||200;
-
-  for(let i=0;i<levels;i++){
-    if(ocType==='perfect'){
-      eut = eut * 4;
-      dur = Math.max(1, Math.floor(dur / 2));
+  function setCalcMode(mode){
+    calcMode = mode;
+    const rateBtn = document.getElementById('modeRateBtn');
+    const onceBtn = document.getElementById('modeOnceBtn');
+    const rateInputs = document.getElementById('rateInputs');
+    if(mode === 'once'){
+      rateBtn.className = 'btn btn-sm';
+      rateBtn.style.cssText = 'border-radius:0;border:none;padding:5px 8px';
+      onceBtn.className = 'btn btn-p btn-sm';
+      onceBtn.style.cssText = 'border-radius:0;border:none;padding:5px 8px;border-left:1px solid var(--border)';
+      rateInputs.style.display = 'none';
     } else {
-      eut = eut * 4;
-      dur = Math.max(1, Math.floor(dur / 4));
+      onceBtn.className = 'btn btn-sm';
+      onceBtn.style.cssText = 'border-radius:0;border:none;padding:5px 8px;border-left:1px solid var(--border)';
+      rateBtn.className = 'btn btn-p btn-sm';
+      rateBtn.style.cssText = 'border-radius:0;border:none;padding:5px 8px';
+      rateInputs.style.display = '';
     }
   }
-  return {eut, duration:dur, ocLevels:levels};
-}
-
-function updateOCPreview(){
-  const tier=document.getElementById('ocTier').value;
-  const type=document.getElementById('ocType').value;
-  const el=document.getElementById('ocPreview');
-  if(!tier||tier==='0'){el.textContent='';return;}
-  el.textContent=`Running at ${tier} — ${type==='perfect'?'perfect':'normal'} OC`;
-}
-
-// ═══════════════════════════════════════════════
-// RECIPE LIST
-// ═══════════════════════════════════════════════
-function renderList(){
-  const q=(document.getElementById('searchBox').value||'').toLowerCase();
-  document.getElementById('rcCount').textContent=recipes.length;
-  updateSugs();
-  const f=recipes.filter(r=>
-    r.name.toLowerCase().includes(q)||
-    r.machine.toLowerCase().includes(q)||
-    (r.outputs||[]).some(o=>o.item.toLowerCase().includes(q))||
-    (r.inputs||[]).some(i=>i.item.toLowerCase().includes(q))
-  );
-  if(!f.length){
-    document.getElementById('recipeList').innerHTML=`<div class="empty"><div class="empty-icon">⚙</div><div class="empty-text">${recipes.length===0?'No recipes yet.<br>Add or import.':'No matches.'}</div></div>`;
-    return;
-  }
-  document.getElementById('recipeList').innerHTML=f.map(r=>`
-    <div class="recipe-card" onclick="openEdit('${r.id}')">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:3px">
-        <div class="r-name">${r.name}</div>
-        <span class="tier tier-${r.tier||'LV'}">${r.tier||'LV'}</span>
-      </div>
-      <div class="r-meta">${r.machine} · ${r.eut||0} EU/t · ${r.duration||0}t${r.blastTemp?` · 🔥${r.blastTemp}K`:''}${r.circuit!=null?` · ◈${r.circuit}`:''}${r.conditions?.length?` · 🔒cond`:''}</div>
-      <div class="chips">
-        ${(r.outputs||[]).map(o=>`<span class="chip chip-o">▶ ${o.qty}x ${o.item}</span>`).join('')}
-        ${(r.inputs||[]).map(i=>`<span class="chip chip-i">◀ ${i.qty}x ${i.item}</span>`).join('')}
-        ${(r.fluidInputs||[]).map(f=>`<span class="chip chip-fi">≋ ${f.qty}mB ${f.item}</span>`).join('')}
-        ${(r.fluidOutputs||[]).map(f=>`<span class="chip chip-fo">≋▶ ${f.qty}mB ${f.item}</span>`).join('')}
-      </div>
-    </div>`).join('');
-}
-
-function updateSugs(){
-  const items=new Set();
-  recipes.forEach(r=>{
-    (r.outputs||[]).forEach(o=>items.add(o.item));
-    (r.fluidOutputs||[]).forEach(f=>items.add(f.item+' (fluid)'));
-  });
-  document.getElementById('itemSugs').innerHTML=[...items].map(i=>`<option value="${i}">`).join('');
-}
-
-// ═══════════════════════════════════════════════
-// ADD / EDIT
-// ═══════════════════════════════════════════════
-function openAdd(){
-  editingId=null;
-  document.getElementById('addTitle').textContent='Add Recipe';
-  document.getElementById('delBtn').style.display='none';
-  ['rName','rEut','rDuration','rBlast','rCircuit','rNC','rFusion'].forEach(id=>{document.getElementById(id).value='';});
-  document.getElementById('rParallels').value='1';
-  document.getElementById('rMachine').value='Electric Blast Furnace';
-  document.getElementById('rTier').value='MV';
-  ['outEd','inEd','fiEd','foEd','chEd','ciEd','condEd','dataEd'].forEach(id=>{document.getElementById(id).innerHTML='';});
-  addIO('outEd','out'); addIO('inEd','in');
-  document.getElementById('addModal').classList.add('open');
-}
-
-function openEdit(id){
-  const r=recipes.find(x=>x.id===id); if(!r) return;
-  editingId=id;
-  document.getElementById('addTitle').textContent='Edit Recipe';
-  document.getElementById('delBtn').style.display='block';
-  document.getElementById('rName').value=r.name||'';
-  document.getElementById('rMachine').value=r.machine||'Electric Blast Furnace';
-  document.getElementById('rTier').value=r.tier||'LV';
-  document.getElementById('rEut').value=r.eut||'';
-  document.getElementById('rDuration').value=r.duration||'';
-  document.getElementById('rParallels').value=r.parallels||1;
-  document.getElementById('rCircuit').value=r.circuit!=null?r.circuit:'';
-  document.getElementById('rBlast').value=r.blastTemp||'';
-  document.getElementById('rFusion').value=r.fusionStartEU||'';
-  document.getElementById('rNC').value=r.notConsumable||'';
-  ['outEd','inEd','fiEd','foEd','chEd','ciEd','condEd','dataEd'].forEach(id=>{document.getElementById(id).innerHTML='';});
-  (r.outputs||[]).forEach(o=>addIO('outEd','out',o.item,o.qty));
-  (r.inputs||[]).forEach(i=>addIO('inEd','in',i.item,i.qty));
-  (r.fluidInputs||[]).forEach(f=>addIO('fiEd','fi',f.item,f.qty));
-  (r.fluidOutputs||[]).forEach(f=>addIO('foEd','fo',f.item,f.qty));
-  (r.chancedOutputs||[]).forEach(c=>addChanced(c.item,c.qty,c.chance,c.boost));
-  (r.customIngredients||[]).forEach(ci=>addCI(ci.role,ci.value,ci.qty));
-  (r.conditions||[]).forEach(c=>addCond(c.type,c.value));
-  (r.addData||[]).forEach(d=>addData(d.key,d.value));
-  document.getElementById('addModal').classList.add('open');
-}
-
-function closeAdd(){ document.getElementById('addModal').classList.remove('open'); }
-
-function addIO(edId,type,item='',qty=''){
-  const unit=(type==='fi'||type==='fo')?'mB':'×';
-  const row=document.createElement('div'); row.className='io-row';
-  row.innerHTML=`<input type="text" class="ii" placeholder="${type==='fi'||type==='fo'?'fluid_id':'item_id'}" value="${item}" style="flex:1;margin:0"><input type="number" class="iq" placeholder="qty" value="${qty}" style="width:58px;margin:0" min="0"><span style="color:var(--text-dim);font-size:9px;width:22px">${unit}</span><button class="btn btn-sm btn-d" style="padding:2px 5px" onclick="this.parentElement.remove()">×</button>`;
-  document.getElementById(edId).appendChild(row);
-}
-
-function addChanced(item='',qty='',chance='',boost=''){
-  const row=document.createElement('div'); row.className='io-row'; row.style.flexWrap='wrap';
-  row.innerHTML=`<input type="text" class="ci" placeholder="item_id" value="${item}" style="flex:1;min-width:80px;margin:0"><input type="number" class="cq" placeholder="qty" value="${qty}" style="width:45px;margin:0"><input type="number" class="cc" placeholder="%×100" value="${chance}" style="width:58px;margin:0" title="e.g. 8500=85%"><input type="number" class="cb" placeholder="boost" value="${boost}" style="width:45px;margin:0"><button class="btn btn-sm btn-d" style="padding:2px 5px" onclick="this.parentElement.remove()">×</button>`;
-  document.getElementById('chEd').appendChild(row);
-}
-
-function addCI(role='',value='',qty=''){
-  const row=document.createElement('div'); row.className='kv-row';
-  row.innerHTML=`<select style="width:90px;margin:0"><option value="input" ${role==='input'?'selected':''}>Input</option><option value="output" ${role==='output'?'selected':''}>Output</option><option value="notConsumable" ${role==='notConsumable'?'selected':''}>Not Consumed</option></select><input type="text" placeholder="#gtceu:circuits/hv or Item.of(...)" value="${value}" style="flex:1;margin:0"><input type="number" placeholder="qty" value="${qty}" style="width:50px;margin:0" min="0"><button class="btn btn-sm btn-d" style="padding:2px 5px" onclick="this.parentElement.remove()">×</button>`;
-  document.getElementById('ciEd').appendChild(row);
-}
-
-function addCond(type='',value=''){
-  const row=document.createElement('div'); row.className='kv-row';
-  row.innerHTML=`<select style="width:110px;margin:0"><option value="cleanroom" ${type==='cleanroom'?'selected':''}>Cleanroom</option><option value="dimension" ${type==='dimension'?'selected':''}>Dimension</option><option value="soul" ${type==='soul'?'selected':''}>Soul Condition</option><option value="blast_temp" ${type==='blast_temp'?'selected':''}>Blast Temp Min</option><option value="custom" ${type==='custom'?'selected':''}>Custom</option></select><input type="text" placeholder="value / class name" value="${value}" style="flex:1;margin:0"><button class="btn btn-sm btn-d" style="padding:2px 5px" onclick="this.parentElement.remove()">×</button>`;
-  document.getElementById('condEd').appendChild(row);
-}
-
-function addData(key='',value=''){
-  const row=document.createElement('div'); row.className='kv-row';
-  row.innerHTML=`<input type="text" placeholder="key (e.g. soul_growth_perm)" value="${key}" style="flex:1;margin:0"><input type="text" placeholder="value (e.g. 0.01)" value="${value}" style="flex:1;margin:0"><button class="btn btn-sm btn-d" style="padding:2px 5px" onclick="this.parentElement.remove()">×</button>`;
-  document.getElementById('dataEd').appendChild(row);
-}
-
-function readIO(edId){
-  return [...document.querySelectorAll(`#${edId} .io-row`)].map(row=>{
-    const item=row.querySelector('.ii').value.trim().toLowerCase().replace(/\s+/g,'_');
-    const qty=parseFloat(row.querySelector('.iq').value)||0;
-    return (item&&qty>0)?{item,qty}:null;
-  }).filter(Boolean);
-}
-function readChanced(){
-  return [...document.querySelectorAll('#chEd .io-row')].map(row=>{
-    const item=row.querySelector('.ci').value.trim().toLowerCase().replace(/\s+/g,'_');
-    const qty=parseFloat(row.querySelector('.cq').value)||0;
-    const chance=parseInt(row.querySelector('.cc').value)||0;
-    const boost=parseInt(row.querySelector('.cb').value)||0;
-    return item?{item,qty,chance,boost}:null;
-  }).filter(Boolean);
-}
-function readCI(){
-  return [...document.querySelectorAll('#ciEd .kv-row')].map(row=>{
-    const selects=row.querySelectorAll('select'); const inputs=row.querySelectorAll('input');
-    return {role:selects[0].value, value:inputs[0].value.trim(), qty:parseFloat(inputs[1].value)||1};
-  }).filter(c=>c.value);
-}
-function readCond(){
-  return [...document.querySelectorAll('#condEd .kv-row')].map(row=>{
-    const selects=row.querySelectorAll('select'); const inputs=row.querySelectorAll('input');
-    return {type:selects[0].value, value:inputs[0].value.trim()};
-  }).filter(c=>c.value||c.type!=='custom');
-}
-function readData(){
-  return [...document.querySelectorAll('#dataEd .kv-row')].map(row=>{
-    const inputs=row.querySelectorAll('input');
-    return {key:inputs[0].value.trim(), value:inputs[1].value.trim()};
-  }).filter(d=>d.key);
-}
-
-function saveRecipe(){
-  const name=document.getElementById('rName').value.trim();
-  if(!name){notify('Recipe name required.');return;}
-  const outputs=readIO('outEd');
-  if(!outputs.length){notify('At least one output required.');return;}
-  const circ=document.getElementById('rCircuit').value.trim();
-  const blast=document.getElementById('rBlast').value.trim();
-  const fusion=document.getElementById('rFusion').value.trim();
-  const nc=document.getElementById('rNC').value.trim();
-  const r={
-    id:editingId||('r_'+Date.now()+'_'+Math.random().toString(36).slice(2,6)),
-    name, machine:document.getElementById('rMachine').value,
-    tier:document.getElementById('rTier').value,
-    eut:parseFloat(document.getElementById('rEut').value)||0,
-    duration:parseFloat(document.getElementById('rDuration').value)||1,
-    parallels:parseInt(document.getElementById('rParallels').value)||1,
-    outputs, inputs:readIO('inEd'),
-    fluidOutputs:readIO('foEd'), fluidInputs:readIO('fiEd'),
-    chancedOutputs:readChanced(),
-    customIngredients:readCI(),
-    conditions:readCond(),
-    addData:readData(),
-  };
-  if(circ!=='') r.circuit=parseInt(circ);
-  if(blast!=='') r.blastTemp=parseInt(blast);
-  if(fusion!=='') r.fusionStartEU=parseInt(fusion);
-  if(nc!=='') r.notConsumable=nc;
-  if(editingId){const idx=recipes.findIndex(x=>x.id===editingId); if(idx>=0) recipes[idx]=r;}
-  else recipes.push(r);
-  dbSave(); renderList(); closeAdd();
-  notify(editingId?'Recipe updated.':'Recipe added.');
-}
-
-function deleteRecipe(){
-  if(!editingId) return;
-  recipes=recipes.filter(r=>r.id!==editingId);
-  dbSave(); renderList(); closeAdd(); notify('Deleted.');
-}
-
-// ═══════════════════════════════════════════════
-// CALCULATOR
-// ═══════════════════════════════════════════════
-let lastTree=null;
-
-function calculate(){
-  const rawTarget=document.getElementById('targetItem').value.trim();
-  const isFluid=rawTarget.endsWith('(fluid)');
-  const target=rawTarget.replace(' (fluid)','').toLowerCase().replace(/\s+/g,'_');
-  const qty=parseFloat(document.getElementById('targetQty').value)||1;
-  if(!target){notify('Enter a target item.');return;}
-  if(!recipes.length){notify('No recipes in database.');return;}
-
-  const ocTier=document.getElementById('ocTier').value;
-  const ocType=document.getElementById('ocType').value;
-
-  const recipe=findRecipe(target, isFluid);
-  if(!recipe){
-    document.getElementById('resultsArea').innerHTML=`<div class="empty" style="padding-top:60px"><div class="empty-icon">⚠</div><div class="empty-text">No recipe found for <strong style="color:var(--accent)">${target}</strong>.<br>Check item ID matches exactly.</div></div>`;
-    document.getElementById('productionPanel').innerHTML=`<div class="empty"><div class="empty-text">No recipe found.</div></div>`;
-    return;
-  }
-
-  const rawMats=new Map();
-  const steps=[];
-  const tree=resolve(target, qty, rawMats, steps, new Set(), 0, ocTier, ocType, isFluid);
-  lastTree=tree;
-  renderResults(target, qty, rawMats, steps, tree);
-  renderProductionLine(steps, ocTier, ocType);
-}
-
-function findRecipe(item, isFluid=false){
-  if(isFluid){
-    return recipes.find(r=>(r.fluidOutputs||[]).some(f=>f.item===item))
-        || recipes.find(r=>(r.outputs||[]).some(o=>o.item===item));
-  }
-  return recipes.find(r=>r.outputs?.[0]?.item===item)
-      || recipes.find(r=>(r.outputs||[]).some(o=>o.item===item))
-      || recipes.find(r=>(r.fluidOutputs||[]).some(f=>f.item===item));
-}
-
-function resolve(item, qtyPerSec, rawMats, steps, visited, depth, ocTier, ocType, isFluid=false){
-  const recipe=findRecipe(item, isFluid);
-  if(!recipe||depth>30){
-    rawMats.set(item,(rawMats.get(item)||0)+qtyPerSec);
-    return{item,qty:qtyPerSec,isRaw:true,children:[]};
-  }
-  if(visited.has(item)){
-    rawMats.set(item,(rawMats.get(item)||0)+qtyPerSec);
-    return{item,qty:qtyPerSec,isRaw:true,isCycle:true,children:[]};
-  }
-  visited.add(item);
-
-  // Apply overclock
-  const oc=ocCalc(recipe, ocTier==='0'?null:ocTier, ocType);
-  const effEut=oc.eut;
-  const effDur=oc.duration;
-
-  const outEntry=isFluid
-    ? (recipe.fluidOutputs||[]).find(f=>f.item===item) || recipe.outputs.find(o=>o.item===item)
-    : (recipe.outputs||[]).find(o=>o.item===item) || (recipe.fluidOutputs||[]).find(f=>f.item===item);
-
-  if(!outEntry){
-    rawMats.set(item,(rawMats.get(item)||0)+qtyPerSec);
-    visited.delete(item);
-    return{item,qty:qtyPerSec,isRaw:true,children:[]};
-  }
-
-  const outPerCycle=outEntry.qty*(recipe.parallels||1);
-  const durSec=effDur/20;
-  const outPerSec=outPerCycle/durSec;
-  const needed=qtyPerSec/outPerSec;
-  const count=Math.ceil(needed);
-  const util=((needed/count)*100).toFixed(1);
-  const stepEut=effEut*count;
-
-  const ex=steps.find(s=>s.recipeId===recipe.id);
-  if(ex){ex.machines+=count;ex.totalEut+=stepEut;ex.producing.push(item);}
-  else steps.push({recipeId:recipe.id,recipe,machines:count,totalEut:stepEut,producing:[item],util,ocLevels:oc.ocLevels,effEut,effDur});
-
-  const children=[...(recipe.inputs||[]).map(inp=>{
-    const inpPerSec=(inp.qty*(recipe.parallels||1)/durSec)*needed;
-    return resolve(inp.item,inpPerSec,rawMats,steps,new Set(visited),depth+1,ocTier,ocType,false);
-  })];
-
-  (recipe.fluidInputs||[]).forEach(f=>{
-    const k=f.item+' (fluid)';
-    rawMats.set(k,(rawMats.get(k)||0)+(f.qty/durSec)*needed);
-  });
-
-  visited.delete(item);
-  return{item,qty:qtyPerSec,recipe,needed,count,util,children,isRaw:false,ocLevels:oc.ocLevels};
-}
-
-function renderResults(target,qty,rawMats,steps,tree){
-  let html=`<div class="result-section">
-    <div class="sec-title">Production Chain — ${fmt(qty)}/s ${target} <span style="color:var(--text-dim);font-size:9px">(click node for EMI view)</span></div>
-    ${renderTree(tree,0)}
-  </div>
-  <div class="result-section">
-    <div class="sec-title">Raw Material Requirements</div>
-    <table class="mat-table">
-      <thead><tr><th>Material</th><th style="text-align:right">per second</th><th style="text-align:right">per minute</th></tr></thead>
-      <tbody>`;
-  rawMats.forEach((q,item)=>{
-    const fl=item.endsWith('(fluid)');
-    html+=`<tr><td>${fl?'<span style="color:var(--accent)">≋</span> ':''}${item}</td><td style="text-align:right;color:var(--yellow);font-weight:700">${fmt(q)}</td><td style="text-align:right;color:var(--orange);font-weight:700">${fmt(q*60)}</td></tr>`;
-  });
-  html+=`</tbody></table></div>`;
-  document.getElementById('resultsArea').innerHTML=html;
-}
-
-function renderTree(node,depth){
-  const pad='│  '.repeat(Math.max(0,depth-1))+(depth>0?'├─ ':'');
-  const ocBadge=(!node.isRaw&&node.ocLevels>0)?`<span style="color:var(--accent);font-size:8px;margin-left:4px">OC+${node.ocLevels}</span>`:'';
-  let html=`<div class="chain-node">
-    <div class="chain-row" onclick="openEMIForNode(${JSON.stringify(node.item?node.item:'').replace(/"/g,'&quot;')},${node.isRaw?'true':'false'})">
-      <span style="color:#2a2a2a;font-size:10px;white-space:pre">${pad}</span>
-      <span style="flex:1;color:var(--text-bright)">${node.item}</span>
-      <span style="color:var(--yellow);font-weight:700;margin-right:6px">${fmt(node.qty)}/s</span>
-      ${node.isRaw
-        ?`<span style="color:var(--orange);font-size:9px">${node.isCycle?'CYCLE':'RAW'}</span>`
-        :`<span style="color:var(--text-dim);font-size:9px">${node.recipe.machine} ×${node.count} <span style="color:#444">(${node.util}%)</span>${ocBadge}</span>`
-      }
-    </div>`;
-  if(node.children?.length) html+=`<div style="margin-left:16px;margin-top:3px">${node.children.map(c=>renderTree(c,depth+1)).join('')}</div>`;
-  html+=`</div>`;
-  return html;
-}
-
-function renderProductionLine(steps, ocTier, ocType){
-  if(!steps.length){
-    document.getElementById('productionPanel').innerHTML=`<div class="empty"><div class="empty-text">No machines needed.</div></div>`;
-    return;
-  }
-  const totalEut=steps.reduce((s,m)=>s+m.totalEut,0);
-  let html=`<div class="eu-sum">
-    <div style="font-size:22px;font-weight:700;color:var(--orange)">${fmtEU(totalEut)} EU/t</div>
-    <div style="font-size:9px;color:var(--text-dim);letter-spacing:1px;margin:2px 0 4px">TOTAL POWER DRAW</div>
-    <div style="font-size:9px;color:var(--text-dim)">${fmtEU(totalEut*20)} EU/s · ${fmtEU(totalEut*72000)} EU/h</div>
-    ${ocTier&&ocTier!=='0'?`<div style="font-size:9px;color:var(--accent);margin-top:4px">OC: ${ocTier} ${ocType==='perfect'?'perfect':'normal'}</div>`:''}
-  </div>
-  <div class="sec-title" style="margin-bottom:8px">Machine Breakdown</div>`;
-
-  const byMachine={};
-  steps.forEach(s=>{
-    const key=s.recipe.machine+'|'+(s.recipe.tier||'LV');
-    if(!byMachine[key]) byMachine[key]={machine:s.recipe.machine,tier:s.recipe.tier||'LV',machines:0,eut:0,producing:[]};
-    byMachine[key].machines+=s.machines;
-    byMachine[key].eut+=s.totalEut;
-    byMachine[key].producing.push(...s.producing);
-  });
-
-  Object.values(byMachine).forEach(g=>{
-    html+=`<div class="machine-row" style="cursor:pointer" onclick="openEMIForMachine('${g.machine.replace(/'/g,"\\'")}')">
-      <div style="font-size:20px;font-weight:700;color:var(--accent);min-width:36px;text-align:center;line-height:1">${g.machines}</div>
-      <div style="flex:1">
-        <div style="font-weight:600;color:var(--text-bright);margin-bottom:3px">${g.machine}</div>
-        <div style="font-size:9px;color:var(--text-dim)">
-          <span class="tier tier-${g.tier}">${g.tier}</span>
-          ${[...new Set(g.producing)].map(p=>`<span style="margin-left:5px">${p}</span>`).join('')}
-        </div>
-      </div>
-      <div style="text-align:right">
-        <div style="color:var(--orange);font-size:11px;font-weight:600">${fmtEU(g.eut)}</div>
-        <div style="font-size:9px;color:var(--text-dim)">EU/t</div>
-      </div>
-    </div>`;
-  });
-  document.getElementById('productionPanel').innerHTML=html;
-}
-
-function clearResults(){
-  document.getElementById('targetItem').value='';
-  document.getElementById('resultsArea').innerHTML=`<div class="empty" style="padding-top:60px"><div class="empty-icon">◈</div><div class="empty-text">Add recipes then target an item to calculate<br>the full production chain.</div></div>`;
-  document.getElementById('productionPanel').innerHTML=`<div class="empty"><div class="empty-icon">🏭</div><div class="empty-text">Run a calculation to see<br>machine counts and EU/t here.</div></div>`;
-}
-
-function copyLine(){
-  navigator.clipboard.writeText(document.getElementById('productionPanel').innerText).then(()=>notify('Copied.'));
-}
-
-// ═══════════════════════════════════════════════
-// EMI RECIPE WINDOW
-// ═══════════════════════════════════════════════
-const ITEM_ICONS={
-  // Common GTCEu items mapped to emoji approximations
-  ingot:'🟡',dust:'🟤',gem:'💎',plate:'⬜',gear:'⚙',rod:'➕',
-  wire:'〰',fluid:'🫧',ore:'🪨',circuit:'🔌',hull:'📦',
-  default:'⬜'
-};
-
-function getIcon(itemId){
-  for(const [k,v] of Object.entries(ITEM_ICONS)){
-    if(itemId.includes(k)) return v;
-  }
-  return ITEM_ICONS.default;
-}
-
-function openEMIForNode(item, isRaw){
-  if(isRaw){notify('No recipe for raw material: '+item);return;}
-  const matching=recipes.filter(r=>
-    (r.outputs||[]).some(o=>o.item===item)||(r.fluidOutputs||[]).some(f=>f.item===item)
-  );
-  if(!matching.length){notify('No recipe found for: '+item);return;}
-  emiRecipes=matching; emiIdx=0;
-  renderEMI();
-  document.getElementById('emiModal').classList.add('open');
-}
-
-function openEMIForMachine(machine){
-  const matching=recipes.filter(r=>r.machine===machine);
-  if(!matching.length){notify('No recipes for machine: '+machine);return;}
-  emiRecipes=matching; emiIdx=0;
-  renderEMI();
-  document.getElementById('emiModal').classList.add('open');
-}
-
-function closeEMI(){ document.getElementById('emiModal').classList.remove('open'); }
-
-function emiNav(dir){
-  emiIdx=Math.max(0,Math.min(emiRecipes.length-1,emiIdx+dir));
-  renderEMI();
-}
-
-function renderEMI(){
-  const r=emiRecipes[emiIdx];
-  const ocTier=document.getElementById('ocTier').value;
-  const ocType=document.getElementById('ocType').value;
-  const oc=ocCalc(r, ocTier==='0'?null:ocTier, ocType);
-
-  document.getElementById('emiTitle').textContent=`EMI — ${r.name}`;
-  document.getElementById('emiPage').textContent=`${emiIdx+1} / ${emiRecipes.length}`;
-  document.getElementById('emiPrev').disabled=emiIdx===0;
-  document.getElementById('emiNext').disabled=emiIdx===emiRecipes.length-1;
-
-  const durSec=(oc.duration/20).toFixed(1);
-  const ocNote=oc.ocLevels>0?` <span style="color:var(--accent)">(OC ×${oc.ocLevels})</span>`:'';
-
-  function slot(item,qty,isFluid=false,isChanced=false,chance=0){
-    const abbr=item.split('_').map(w=>w[0]).join('').toUpperCase().slice(0,3);
-    const cls=`emi-slot${isFluid?' emi-fluid':''}${isChanced?' emi-chanced':''}`;
-    const qtyStr=qty>1?qty:'';
-    const chanceStr=isChanced?`<div style="position:absolute;top:1px;left:2px;font-size:7px;color:var(--purple)">${(chance/100).toFixed(0)}%</div>`:'';
-    return `<div class="${cls}" title="${item}${isFluid?' (fluid)':''}${isChanced?` ${(chance/100).toFixed(1)}%`:''}">
-      <div class="icon" style="font-size:11px;font-weight:700;color:#aaa">${abbr}</div>
-      ${chanceStr}
-      ${qtyStr?`<div class="qty">${qtyStr}</div>`:''}
-    </div>`;
-  }
-
-  const inputs=[
-    ...(r.inputs||[]).map(i=>slot(i.item,i.qty)),
-    ...(r.fluidInputs||[]).map(f=>slot(f.item,f.qty,true)),
-    ...(r.customIngredients||[]).filter(ci=>ci.role==='input').map(ci=>slot(ci.value,ci.qty)),
-  ].join('');
-
-  const notCon=r.notConsumable?`<div style="margin-top:6px;font-size:9px;color:#888">🔒 Not consumed: <span style="color:var(--text-bright)">${r.notConsumable}</span></div>`:'';
-
-  const outputs=[
-    ...(r.outputs||[]).map(o=>slot(o.item,o.qty)),
-    ...(r.fluidOutputs||[]).map(f=>slot(f.item,f.qty,true)),
-    ...(r.chancedOutputs||[]).map(c=>slot(c.item,c.qty,false,true,c.chance)),
-  ].join('');
-
-  const conditions=(r.conditions||[]).length
-    ? `<div style="font-size:9px;color:#e67e22;margin-top:4px">⚠ ${r.conditions.map(c=>c.type+(c.value?': '+c.value:'')).join(' · ')}</div>` : '';
-
-  const addDataHtml=(r.addData||[]).length
-    ? `<div style="font-size:9px;color:var(--text-dim);margin-top:4px">${r.addData.map(d=>`<span style="color:var(--accent)">${d.key}</span>: ${d.value}`).join(' · ')}</div>` : '';
-
-  document.getElementById('emiBody').innerHTML=`
-    <div class="emi-win">
-      <div class="emi-title">${r.machine}${r.circuit!=null?` [Circuit: ${r.circuit}]`:''}</div>
-      <div class="emi-slots">
-        <div class="emi-group">
-          <div class="emi-group-label">Inputs</div>
-          <div style="display:flex;flex-wrap:wrap;gap:3px;max-width:200px">${inputs||'<span style="font-size:9px;color:var(--text-dim)">none</span>'}</div>
-        </div>
-        <div class="emi-arrow">→</div>
-        <div class="emi-group">
-          <div class="emi-group-label">Outputs</div>
-          <div style="display:flex;flex-wrap:wrap;gap:3px;max-width:200px">${outputs||'<span style="font-size:9px;color:var(--text-dim)">none</span>'}</div>
-        </div>
-      </div>
-      ${notCon}
-      <div class="emi-info">
-        <div>EU/t: <span>${fmtEU(oc.eut)}${ocNote}</span></div>
-        <div>Duration: <span>${oc.duration}t (${durSec}s)</span></div>
-        <div>Tier: <span class="tier tier-${r.tier||'LV'}">${r.tier||'LV'}</span></div>
-        ${r.blastTemp?`<div>Blast: <span>🔥${r.blastTemp}K</span></div>`:''}
-        ${r.fusionStartEU?`<div>Fusion EU: <span>${fmtEU(r.fusionStartEU)}</span></div>`:''}
-      </div>
-      ${conditions}${addDataHtml}
-    </div>`;
-}
-
-// ═══════════════════════════════════════════════
-// IMPORT
-// ═══════════════════════════════════════════════
-function openImport(){ document.getElementById('importModal').classList.add('open'); }
-function closeImport(){ document.getElementById('importModal').classList.remove('open'); }
-
-function switchTab(tab, el){
-  document.querySelectorAll('#importModal .tab').forEach(t=>t.classList.remove('active'));
-  el.classList.add('active');
-  ['tabKjs','tabJava','tabGithub','tabJson'].forEach(id=>document.getElementById(id).style.display='none');
-  const map={kjs:'tabKjs',java:'tabJava',github:'tabGithub',json:'tabJson'};
-  document.getElementById(map[tab]).style.display='block';
-}
-
-// ── GitHub Fetch ─────────────────────────────
-async function fetchGithub() {
-  const repo = document.getElementById('ghRepo').value.trim();
-  const path = document.getElementById('ghPath').value.trim();
-  const branch = document.getElementById('ghBranch').value.trim() || 'main';
-  const token = document.getElementById('ghToken').value.trim();
-  const type = document.getElementById('ghType').value;
-  const status = document.getElementById('ghStatus');
-  const prog = document.getElementById('ghProg');
-  const bar = document.getElementById('ghBar');
-
-  if (!repo) { notify('Repo is required.'); return; }
-
-  // Clean repo name in case user pasted full URL
-  const repoClean = repo.replace('https://github.com/', '').replace(/\/$/, '');
-
-  try {
-    status.textContent = "Scanning directory...";
-    prog.style.display = 'block';
-    bar.style.width = '10%';
-
-    // 1. Get the entire file tree for the branch
-    const treeUrl = `https://api.github.com/repos/${repoClean}/git/trees/${branch}?recursive=1`;
-    const headers = token ? { 'Authorization': `token ${token}` } : {};
-
-    const treeRes = await fetch(treeUrl, { headers });
-    if (!treeRes.ok) throw new Error(`GitHub API Error: ${treeRes.statusText}`);
-
-    const treeData = await treeRes.json();
-
-    // 2. Filter for files inside your path with the right extension
-    const extension = type === 'kjs' ? '.js' : '.java';
-    const filesToFetch = treeData.tree.filter(file =>
-            file.path.startsWith(path) &&
-            file.path.endsWith(extension) &&
-            file.type === 'blob'
-    );
-
-    if (filesToFetch.length === 0) {
-      status.textContent = "No matching files found in that path.";
-      return;
-    }
-
-    status.textContent = `Found ${filesToFetch.length} files. Fetching...`;
-    let loadedCount = 0;
-
-    // 3. Loop and fetch each file
-    for (const file of filesToFetch) {
-      const rawUrl = `https://raw.githubusercontent.com/${repoClean}/${branch}/${file.path}`;
-      const fileRes = await fetch(rawUrl, { headers });
-
-      if (fileRes.ok) {
-        const content = await fileRes.text();
-
-        // Feed content into your existing parsers
-        if (type === 'kjs') {
-          // Put content into textarea and call your parser
-          document.getElementById('kjsInput').value = content;
-          await parseKJS();
-        } else {
-          document.getElementById('javaInput').value = content;
-          await parseJava();
-        }
-      }
-
-      loadedCount++;
-      bar.style.width = `${(loadedCount / filesToFetch.length) * 100}%`;
-      status.textContent = `Imported ${loadedCount}/${filesToFetch.length} files...`;
-    }
-
-    notify(`Successfully imported recipes from ${loadedCount} files.`);
-    status.textContent = "Done.";
-    setTimeout(closeImport, 1500);
-
-  } catch (err) {
-    console.error(err);
-    status.textContent = "Error: " + err.message;
-    notify("Import failed. Check console.");
-  }
-}
-
-// ── KubeJS ───────────────────────────────────
-function parseKJS(){
-  const src=document.getElementById('kjsInput').value;
-  const statusEl=document.getElementById('kjsStatus');
-  const prog=document.getElementById('kjsProg');
-  const bar=document.getElementById('kjsBar');
-  statusEl.textContent='Parsing...'; prog.style.display='block'; bar.style.width='0%';
-  parseSrcKJS(src,(p)=>{bar.style.width=(p*100)+'%';}).then(imported=>{
-    dbSave(); renderList(); prog.style.display='none';
-    statusEl.textContent=imported>0?`✓ Imported ${imported} recipes`:'⚠ No new recipes found.';
-    statusEl.style.color=imported>0?'var(--green)':'var(--orange)';
-    if(imported>0){notify(`Imported ${imported} recipes.`);setTimeout(closeImport,900);}
-  });
-}
-
-function parseSrcKJS(src, onProgress){
-  return new Promise(resolve=>{
-    const starts=[];
-    const re=/(?:event\.recipes\.gtceu|greg)\.(\w+)\s*\(\s*['"]([^'"]+)['"]\s*\)/g;
-    let m;
-    while((m=re.exec(src))!==null){
-      if(['shaped','shapeless','custom'].includes(m[1])) continue;
-      starts.push({index:m.index,machine:m[1],id:m[2]});
-    }
-    const blocks=starts.map((s,i)=>{
-      const end=i+1<starts.length?starts[i+1].index:src.length;
-      return{machine:s.machine,id:s.id,chain:src.slice(s.index,end)};
-    });
-    let imported=0; const total=blocks.length;
-    if(!total){resolve(0);return;}
-    function batch(si){
-      const end=Math.min(si+50,total);
-      for(let i=si;i<end;i++){
-        try{const r=kjsBlock(blocks[i]); if(r&&!recipes.find(x=>x.name===r.name)){recipes.push(r);imported++;}}catch(e){}
-      }
-      onProgress(end/total);
-      if(end<total) setTimeout(()=>batch(end),0);
-      else resolve(imported);
-    }
-    setTimeout(()=>batch(0),0);
-  });
-}
-
-function kjsBlock({machine,id,chain}){
-  const outputs=[],inputs=[],fluidOutputs=[],fluidInputs=[];
-  let re,m;
-  re=/\.(?:itemOutputs?|outputItems?)\(([^;]*?)\)/g; while((m=re.exec(chain))!==null) kjsItems(m[1]).forEach(i=>outputs.push(i));
-  re=/\.(?:itemInputs?|inputItems?)\(([^;]*?)\)/g; while((m=re.exec(chain))!==null) kjsItems(m[1]).forEach(i=>inputs.push(i));
-  re=/\.outputFluids?\(([^;]*?)\)/g; while((m=re.exec(chain))!==null) kjsFluids(m[1]).forEach(f=>fluidOutputs.push(f));
-  re=/\.inputFluids?\(([^;]*?)\)/g; while((m=re.exec(chain))!==null) kjsFluids(m[1]).forEach(f=>fluidInputs.push(f));
-  if(!outputs.length&&!fluidOutputs.length) return null;
-  const chancedOutputs=[];
-  re=/\.chancedOutput\(['"]([^'"]+)['"]\s*,\s*(\d+)\s*,\s*(\d+)\)/g;
-  while((m=re.exec(chain))!==null){const p=kjsItemStr(m[1]);if(p)chancedOutputs.push({...p,chance:parseInt(m[2]),boost:parseInt(m[3])});}
-  const eutM=chain.match(/\.EUt\(([^)]+)\)/);
-  const durM=chain.match(/\.duration\((\d+)\)/);
-  const btM=chain.match(/\.blastFurnaceTemp\((\d+)\)/);
-  const circM=chain.match(/\.circuit\((\d+)\)/);
-  const ncM=chain.match(/\.notConsumable\(['"]([^'"]+)['"]\)/);
-  const rsM=chain.match(/\.stationResearch\([\s\S]*?\.researchStack\(['"]([^'"]+)['"]\)/);
-  const fuM=chain.match(/\.fusionStartEU\(([^)]+)\)/);
-  const eut=eutM?kjsEut(eutM[1]):0;
-  const r={
-    id:'r_'+Date.now()+'_'+Math.random().toString(36).slice(2,7),
-    name:id.replace(/\//g,' ').replace(/_/g,' ').replace(/\b\w/g,l=>l.toUpperCase()),
-    machine:machine.replace(/_/g,' ').replace(/\b\w/g,l=>l.toUpperCase()),
-    tier:eutToTier(eut),eut,
-    duration:durM?parseInt(durM[1]):200,
-    parallels:1,outputs,inputs,fluidOutputs,fluidInputs,chancedOutputs,
-    customIngredients:[],conditions:[],addData:[],
-  };
-  if(btM) r.blastTemp=parseInt(btM[1]);
-  if(circM) r.circuit=parseInt(circM[1]);
-  if(ncM) r.notConsumable=cleanId(ncM[1]);
-  if(rsM) r.researchItem=cleanId(rsM[1]);
-  if(fuM) r.fusionStartEU=parseInt(fuM[1].replace(/_/g,''));
-  return r;
-}
-
-function kjsItems(arg){
-  const results=[];
-  const quoted=arg.match(/['"][^'"]+['"]/g)||[];
-  quoted.forEach(q=>{const p=kjsItemStr(q.slice(1,-1));if(p)results.push(p);});
-  if(results.length) return results;
-  arg.split(',').forEach(part=>{const p=kjsItemStr(part.trim());if(p)results.push(p);});
-  return results;
-}
-function kjsItemStr(raw){
-  if(!raw?.trim()) return null;
-  raw=raw.trim();
-  const m=raw.match(/^(\d+)x\s+(.+)$/); if(m) return{item:cleanId(m[2]),qty:parseInt(m[1])};
-  const m2=raw.match(/Item\.of\(['"]([^'"]+)['"]\s*(?:,\s*(\d+))?\)/); if(m2) return{item:cleanId(m2[1]),qty:parseInt(m2[2]||'1')};
-  if(raw.includes(':')||raw.includes('_')) return{item:cleanId(raw),qty:1};
-  return null;
-}
-function kjsFluids(arg){
-  const results=[];
-  const re=/Fluid\.of\(['"]([^'"]+)['"]\s*,\s*(\d+)\)/g; let m;
-  while((m=re.exec(arg))!==null) results.push({item:cleanId(m[1]),qty:parseInt(m[2])});
-  if(results.length) return results;
-  const sm=arg.match(/['"]([^'"]+)\s+(\d+)['"]/g);
-  if(sm) sm.forEach(s=>{const p=s.slice(1,-1).split(/\s+/);if(p.length>=2)results.push({item:cleanId(p.slice(0,-1).join('_')),qty:parseInt(p[p.length-1])});});
-  return results;
-}
-function kjsEut(raw){
-  raw=raw.trim();
-  const d=raw.match(/(?:GTValues\.)?VA\[(?:GTValues\.)?(\w+)\]\s*\/\s*(\d+(?:\.\d+)?)/); if(d) return Math.floor((TIER_EUT[d[1]]||0)/parseFloat(d[2]));
-  const mul=raw.match(/(?:GTValues\.)?VA\[(?:GTValues\.)?(\w+)\]\s*\*\s*(\d+(?:\.\d+)?)/); if(mul) return Math.round((TIER_EUT[mul[1]]||0)*parseFloat(mul[2]));
-  const t=raw.match(/(?:GTValues\.)?VA\[(?:GTValues\.)?(\w+)\]/); if(t) return TIER_EUT[t[1]]||0;
-  const c=raw.match(/GTValues\.(\w+)/); if(c) return TIER_EUT[c[1]]||0;
-  return parseFloat(raw)||0;
-}
-
-// ── Java ──────────────────────────────────────
-function parseJava(){
-  const src=document.getElementById('javaInput').value;
-  const statusEl=document.getElementById('javaStatus');
-  const prog=document.getElementById('javaProg');
-  const bar=document.getElementById('javaBar');
-  statusEl.textContent='Parsing...'; prog.style.display='block'; bar.style.width='0%';
-  parseSrcJava(src,(p)=>{bar.style.width=(p*100)+'%';}).then(imported=>{
-    dbSave(); renderList(); prog.style.display='none';
-    statusEl.textContent=imported>0?`✓ Imported ${imported} recipes`:'⚠ No new recipes found.';
-    statusEl.style.color=imported>0?'var(--green)':'var(--orange)';
-    if(imported>0){notify(`Imported ${imported} recipes from Java.`);setTimeout(closeImport,900);}
-  });
-}
-
-function parseSrcJava(src, onProgress){
-  return new Promise(resolve=>{
-    const starts=[];
-    const re=/(\w+(?:\.\w+)*)\.recipeBuilder\(['"]([^'"]+)['"]\)/g;
-    let m;
-    while((m=re.exec(src))!==null) starts.push({index:m.index,type:m[1].split('.').pop().toUpperCase(),id:m[2]});
-    const blocks=starts.map((s,i)=>{
-      const searchFrom=s.index;
-      const saveIdx=src.indexOf('.save(provider)',searchFrom);
-      const end=saveIdx>=0?saveIdx+15:(starts[i+1]?.index||src.length);
-      return{type:s.type,id:s.id,chain:src.slice(s.index,end)};
-    });
-    let imported=0; const total=blocks.length;
-    if(!total){resolve(0);return;}
-    function batch(si){
-      const end=Math.min(si+50,total);
-      for(let i=si;i<end;i++){
-        try{const r=javaBlock(blocks[i]); if(r&&!recipes.find(x=>x.name===r.name)){recipes.push(r);imported++;}}catch(e){}
-      }
-      onProgress(end/total);
-      if(end<total) setTimeout(()=>batch(end),0);
-      else resolve(imported);
-    }
-    setTimeout(()=>batch(0),0);
-  });
-}
-
-function javaBlock({type,id,chain}){
-  const outputs=[],inputs=[],fluidOutputs=[],fluidInputs=[];
-  let re,m;
-  re=/\.outputItems?\(([^;)]{1,400})\)/g; while((m=re.exec(chain))!==null) javaItems(m[1]).forEach(i=>outputs.push(i));
-  re=/\.inputItems?\(([^;)]{1,400})\)/g; while((m=re.exec(chain))!==null) javaItems(m[1]).forEach(i=>inputs.push(i));
-  re=/\.outputFluids?\(([^;)]{1,400})\)/g; while((m=re.exec(chain))!==null) javaFluids(m[1]).forEach(f=>fluidOutputs.push(f));
-  re=/\.inputFluids?\(([^;)]{1,400})\)/g; while((m=re.exec(chain))!==null) javaFluids(m[1]).forEach(f=>fluidInputs.push(f));
-  if(!outputs.length&&!fluidOutputs.length) return null;
-  const eutM=chain.match(/\.EUt\(([^)]+)\)/);
-  const durM=chain.match(/\.duration\((\d+)\)/);
-  const btM=chain.match(/\.blastFurnaceTemp\((\d+)\)/);
-  const circM=chain.match(/\.circuitMeta\((\d+)\)/);
-  const fuM=chain.match(/\.fusionStartEU\(([^)]+)\)/);
-  const rsM=chain.match(/\.researchStack\(([^)]+)\)/);
-  const eut=eutM?javaEut(eutM[1]):0;
-  const machine=JAVA_MAP[type]||customMachines.find(cm=>type.toLowerCase().includes(cm.toLowerCase().replace(/\s/g,'_')))||type.replace(/_RECIPES?$/,'').replace(/_/g,' ').replace(/\b\w/g,l=>l.toUpperCase());
-  const r={
-    id:'r_'+Date.now()+'_'+Math.random().toString(36).slice(2,7),
-    name:id.replace(/_/g,' ').replace(/\//g,' ').replace(/\b\w/g,l=>l.toUpperCase()),
-    machine,tier:eutToTier(eut),eut,
-    duration:durM?parseInt(durM[1]):200,
-    parallels:1,outputs,inputs,fluidOutputs,fluidInputs,chancedOutputs:[],
-    customIngredients:[],conditions:[],addData:[],
-  };
-  if(btM) r.blastTemp=parseInt(btM[1]);
-  if(circM) r.circuit=parseInt(circM[1]);
-  if(fuM) r.fusionStartEU=parseInt(fuM[1].replace(/_/g,''));
-  if(rsM){const rsItem=rsM[1].match(/['"]([^'"]+)['"]/); if(rsItem) r.researchItem=jCleanId(rsItem[1]);}
-  return r;
-}
-
-function javaItems(arg){
-  const results=[];
-  const t3=arg.match(/(?:TagPrefix\.)?\w+\s*,\s*(\w+)\s*,\s*(\d+)/); if(t3){results.push({item:jCleanId(t3[1]),qty:parseInt(t3[2])});return results;}
-  const t2=arg.match(/^[\w.]+\s*,\s*(\w+)\s*$/); if(t2){results.push({item:jCleanId(t2[1]),qty:1});return results;}
-  const is=arg.match(/new\s+ItemStack\s*\(\s*(?:\w+\.)?(\w+)\s*,\s*(\d+)\s*\)/); if(is){results.push({item:jCleanId(is[1]),qty:parseInt(is[2])});return results;}
-  const cq=arg.match(/^([\w.]+)\s*,\s*(\d+)$/); if(cq){results.push({item:jCleanId(cq[1]),qty:parseInt(cq[2])});return results;}
-  if(/^[\w.]+$/.test(arg.trim())){results.push({item:jCleanId(arg.trim()),qty:1});return results;}
-  return results;
-}
-function javaFluids(arg){
-  const results=[];
-  const re=/(\w+)\.getFluid\([^,)]*?(\d+)\s*\)/g; let m;
-  while((m=re.exec(arg))!==null) results.push({item:jCleanId(m[1]),qty:parseInt(m[2])});
-  if(results.length) return results;
-  const fq=arg.match(/^(\w+)\s*,\s*(\d+)/); if(fq) results.push({item:jCleanId(fq[1]),qty:parseInt(fq[2])});
-  return results;
-}
-function javaEut(raw){
-  raw=raw.trim();
-  const d=raw.match(/-?VA\[(\w+)\]\s*\/\s*(\d+(?:\.\d+)?)/); if(d) return Math.floor((TIER_EUT[d[1]]||0)/parseFloat(d[2]));
-  const mul=raw.match(/-?VA\[(\w+)\]\s*\*\s*(\d+(?:L)?)/); if(mul) return (TIER_EUT[mul[1]]||0)*parseInt(mul[2]);
-  const t=raw.match(/VA\[(\w+)\]/); if(t) return TIER_EUT[t[1]]||0;
-  return parseFloat(raw.replace(/_/g,'').replace(/L$/,''))||0;
-}
-
-// ── JSON ─────────────────────────────────────
-function parseJSON(){
-  const src=document.getElementById('jsonInput').value.trim();
-  const statusEl=document.getElementById('jsonStatus');
-  try{
-    const arr=JSON.parse(src);
-    if(!Array.isArray(arr)) throw new Error('Expected array');
-    let imported=0;
-    arr.forEach(r=>{
-      if(!r.name||!r.outputs) return;
-      const rec={
-        id:r.id||('r_'+Date.now()+'_'+Math.random().toString(36).slice(2,6)),
-        name:r.name,machine:r.machine||'Unknown',tier:r.tier||'LV',
-        eut:r.eut||0,duration:r.duration||200,parallels:r.parallels||1,
-        outputs:r.outputs||[],inputs:r.inputs||[],
-        fluidOutputs:r.fluidOutputs||[],fluidInputs:r.fluidInputs||[],
-        chancedOutputs:r.chancedOutputs||[],
-        customIngredients:r.customIngredients||[],
-        conditions:r.conditions||[],addData:r.addData||[],
-      };
-      if(r.circuit!=null) rec.circuit=r.circuit;
-      if(r.blastTemp) rec.blastTemp=r.blastTemp;
-      if(r.fusionStartEU) rec.fusionStartEU=r.fusionStartEU;
-      if(r.notConsumable) rec.notConsumable=r.notConsumable;
-      if(r.researchItem) rec.researchItem=r.researchItem;
-      if(!recipes.find(x=>x.name===rec.name)){recipes.push(rec);imported++;}
-    });
-    dbSave(); renderList();
-    statusEl.textContent=`✓ Imported ${imported} recipes`; statusEl.style.color='var(--green)';
-    if(imported>0){notify(`Imported ${imported} recipes.`);setTimeout(closeImport,900);}
-  }catch(e){statusEl.textContent='✗ '+e.message; statusEl.style.color='var(--red)';}
-}
-
-function exportDB(){
-  const blob=new Blob([JSON.stringify(recipes,null,2)],{type:'application/json'});
-  const a=document.createElement('a');
-  a.href=URL.createObjectURL(blob); a.download='phoenix_recipes.json'; a.click();
-  notify('Exported.');
-}
-
-// ═══════════════════════════════════════════════
-// UTILS
-// ═══════════════════════════════════════════════
-function cleanId(r){ return(r||'').replace(/.*:/,'').trim().toLowerCase().replace(/\s+/g,'_'); }
-function jCleanId(r){ return(r||'').replace(/.*\./,'').trim().replace(/([a-z])([A-Z])/g,'$1_$2').toLowerCase(); }
-function eutToTier(e){
-  if(e<=8)return'ULV';if(e<=32)return'LV';if(e<=128)return'MV';
-  if(e<=512)return'HV';if(e<=2048)return'EV';if(e<=8192)return'IV';
-  if(e<=32768)return'LuV';if(e<=131072)return'ZPM';return'UV';
-}
-function fmt(n){
-  if(!n||isNaN(n))return'0';
-  if(n>=1e6)return(n/1e6).toFixed(2)+'M';
-  if(n>=1e3)return(n/1e3).toFixed(2)+'k';
-  if(n<0.01&&n>0)return n.toExponential(2);
-  return parseFloat(n.toFixed(3)).toString();
-}
-function fmtEU(n){
-  if(n>=1e6)return(n/1e6).toFixed(1)+'M';
-  if(n>=1e3)return(n/1e3).toFixed(1)+'k';
-  return Math.round(n).toString();
-}
-function notify(msg){
-  const el=document.getElementById('notif');
-  el.textContent=msg; el.classList.add('show');
-  setTimeout(()=>el.classList.remove('show'),2500);
-}
-
-// Click outside modals to close
-document.querySelectorAll('.modal-overlay').forEach(overlay=>{
-  overlay.addEventListener('click',e=>{if(e.target===overlay) overlay.classList.remove('open');});
-});
 </script>
+
+<div class="notif" id="notif"></div>
 </body>
 </html>

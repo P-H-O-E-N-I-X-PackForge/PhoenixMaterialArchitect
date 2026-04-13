@@ -16,10 +16,11 @@
             <h2 style="margin-top: 10px; color: var(--accent); font-size: 14px; letter-spacing: 1px;">PHOENIX SUITE</h2>
         </div>
 
-        <div class="card" style="display: flex; gap: 5px; margin-bottom: 20px; padding: 5px;">
-            <button id="btnShowArch" class="secondary-btn" style="flex: 1; background: var(--accent); color: white;" onclick="switchView('arch')">ARCHITECT</button>
-            <button id="btnShowLab" class="secondary-btn" style="flex: 1;" onclick="switchView('lab')">TEXTURE LAB</button>
+        <div class="card" style="display: flex; gap: 5px; margin-bottom: 12px; padding: 5px;">
+            <button id="btnShowArch" class="secondary-btn" style="flex: 1; background: var(--accent); color: white;" onclick="switchView('arch')">ARCH</button>
+            <button id="btnShowLab" class="secondary-btn" style="flex: 1;" onclick="switchView('lab')">LAB</button>
         </div>
+        <a href="recipe-calc.html" style="display:block; text-align:center; margin-bottom:12px; padding:7px; background:var(--input); border:1px solid var(--border); border-radius:6px; color:var(--accent); font-family:var(--font); font-size:10px; text-decoration:none; letter-spacing:1px;" onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--border)'">⚗ RECIPE CALCULATOR →</a>
 
         <section class="card">
             <h3>Base Configuration</h3>
@@ -112,6 +113,17 @@
                 <button class="secondary-btn" style="width: 100%; margin-top: 10px;" onclick="addLayer()">+ Add Layer</button>
             </section>
         </div>
+
+        <!-- CALC sidebar placeholder — buttons and DB list live here when calc is active -->
+        <div id="calcSidebar" style="display:none;">
+            <section class="card">
+                <h3>Recipe Actions</h3>
+                <button class="secondary-btn" style="width:100%;margin-bottom:5px;" onclick="calcOpenImport ? calcOpenImport() : window.open('recipe-calc.html')">⬆ Import Recipes</button>
+                <button class="secondary-btn" style="width:100%;margin-bottom:5px;" onclick="calcExportDB ? calcExportDB() : null">⬇ Export DB</button>
+                <button class="secondary-btn" style="width:100%;background:var(--accent);color:white;border-color:var(--accent);" onclick="window.open('recipe-calc.html')">Open Full Calc →</button>
+            </section>
+        </div>
+
     </aside>
 
 
@@ -256,9 +268,16 @@
             </div>
         </div>
 
+        <!-- CALC main placeholder -->
+        <div id="calcMainView" style="display:none; flex:1; align-items:center; justify-content:center; flex-direction:column; gap:16px;">
+            <div style="font-size:13px; color:var(--accent); letter-spacing:2px;">RECIPE CALCULATOR</div>
+            <div style="font-size:10px; color:#6a6a6a; text-align:center; line-height:1.8;">The calculator runs as a standalone tool.<br>Your recipe database is shared via localStorage.</div>
+            <a href="recipe-calc.html" style="display:inline-block; padding:10px 24px; background:var(--accent); color:#fff; text-decoration:none; border-radius:6px; font-family:var(--font); font-size:11px; letter-spacing:1px;">Open Recipe Calculator</a>
+        </div>
+
     </main>
 
-    <aside class="output-sidebar">
+    <aside class="output-sidebar" id="outputSidebar">
         <h3 style="color: var(--accent); margin-bottom: 10px;">Generated Architect Code</h3>
         <pre><code id="materialOutput"></code></pre>
         <textarea id="langOutput" readonly placeholder="Language Provider output..."></textarea>

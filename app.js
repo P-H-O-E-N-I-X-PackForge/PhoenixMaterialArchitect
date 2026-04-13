@@ -21,38 +21,55 @@ document.addEventListener('DOMContentLoaded', () => {
     startAnimation();
 
     window.switchView = function(view) {
-        const archSidebar = document.getElementById('archSidebar');
-        const labSidebar = document.getElementById('labSidebar');
-        const archMain = document.getElementById('archMainView');
-        const labMain = document.getElementById('labMainView');
-        const btnArch = document.getElementById('btnShowArch');
-        const btnLab = document.getElementById('btnShowLab');
+        // All panels
+        const panels = {
+            arch: { sidebar: 'archSidebar',   main: 'archMainView' },
+            lab:  { sidebar: 'labSidebar',     main: 'labMainView'  },
+            calc: { sidebar: 'calcSidebar',    main: 'calcMainView' },
+        };
+        const buttons = {
+            arch: 'btnShowArch',
+            lab:  'btnShowLab',
+            calc: 'btnShowCalc',
+        };
+        const outputSidebar = document.getElementById('outputSidebar');
 
-        if (view === 'arch') {
-            archSidebar.style.display = 'block';
-            archMain.style.display = 'block';
-            labSidebar.style.display = 'none';
-            labMain.style.display = 'none';
-            btnArch.style.background = 'var(--accent)';
-            btnLab.style.background = 'var(--input)';
-        } else {
-            archSidebar.style.display = 'none';
-            archMain.style.display = 'none';
-            labSidebar.style.display = 'block';
-            labMain.style.display = 'block';
-            btnLab.style.background = 'var(--accent)';
-            btnArch.style.background = 'var(--input)';
+        // Hide everything
+        Object.values(panels).forEach(p => {
+            const s = document.getElementById(p.sidebar);
+            const m = document.getElementById(p.main);
+            if (s) s.style.display = 'none';
+            if (m) m.style.display = 'none';
+        });
+        Object.values(buttons).forEach(id => {
+            const b = document.getElementById(id);
+            if (b) { b.style.background = 'var(--input)'; b.style.color = ''; }
+        });
 
-            if (layers.length === 0 && !templateLayers.base) {
-                drawDefaultStone();
-            } else {
-                draw();
-            }
+        // Show selected
+        const panel = panels[view];
+        if (!panel) return;
+        const sidebar = document.getElementById(panel.sidebar);
+        const main    = document.getElementById(panel.main);
+        if (sidebar) sidebar.style.display = 'block';
+        if (main)    main.style.display = (view === 'calc') ? 'flex' : 'block';
+        const btn = document.getElementById(buttons[view]);
+        if (btn) { btn.style.background = 'var(--accent)'; btn.style.color = 'white'; }
+
+        // Output sidebar: hide when in calc view
+        if (outputSidebar) outputSidebar.style.display = (view === 'calc') ? 'none' : 'flex';
+
+        // Lab-specific init
+        if (view === 'lab') {
+            if (layers.length === 0 && !templateLayers.base) drawDefaultStone();
+            else draw();
         }
     };
 
     document.getElementById('btnShowArch').onclick = () => switchView('arch');
-    document.getElementById('btnShowLab').onclick = () => switchView('lab');
+    document.getElementById('btnShowLab').onclick  = () => switchView('lab');
+    const calcBtn = document.getElementById('btnShowCalc');
+    if (calcBtn) calcBtn.onclick = () => switchView('calc');
 
     function updateCode() {
         if (!materialOutput) return;
